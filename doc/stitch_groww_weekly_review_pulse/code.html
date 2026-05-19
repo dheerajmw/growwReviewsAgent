@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Groww Weekly Review Pulse</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F6F7F9;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bar-transition {
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "text-muted": "#7C7E8C",
+                        "surface-container-low": "#f3f2ff",
+                        "surface-bright": "#fbf8ff",
+                        "outline": "#6b7b72",
+                        "primary-container": "#00d09c",
+                        "on-primary-fixed": "#002116",
+                        "status-error": "#DF514C",
+                        "primary": "#006c4f",
+                        "on-error-container": "#93000a",
+                        "status-warning": "#F5A623",
+                        "secondary-fixed-dim": "#c8c6c8",
+                        "secondary": "#5f5e60",
+                        "on-background": "#171a2c",
+                        "tertiary-container": "#ffa15b",
+                        "surface-container-high": "#e5e6ff",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed": "#59fdc5",
+                        "on-surface": "#171a2c",
+                        "page-bg": "#F6F7F9",
+                        "error-container": "#ffdad6",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#713700",
+                        "status-info": "#5367FF",
+                        "tertiary-fixed-dim": "#ffb785",
+                        "on-secondary-container": "#636264",
+                        "border-subtle": "#E9E9EB",
+                        "on-tertiary-fixed": "#301400",
+                        "inverse-on-surface": "#f0efff",
+                        "secondary-fixed": "#e4e2e4",
+                        "surface-dim": "#d7d8f1",
+                        "error": "#ba1a1a",
+                        "outline-variant": "#bacac1",
+                        "card-surface": "#FFFFFF",
+                        "inverse-primary": "#2fe0aa",
+                        "tertiary-fixed": "#ffdcc6",
+                        "on-secondary-fixed": "#1b1b1d",
+                        "surface-container-highest": "#dfe1fa",
+                        "surface-tint": "#006c4f",
+                        "on-surface-variant": "#3c4a43",
+                        "on-primary-fixed-variant": "#00513b",
+                        "secondary-container": "#e2dfe1",
+                        "status-success": "#00D09C",
+                        "surface-variant": "#dfe1fa",
+                        "on-error": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "tertiary": "#934b07",
+                        "surface": "#fbf8ff",
+                        "primary-fixed-dim": "#2fe0aa",
+                        "on-tertiary-container": "#733800",
+                        "on-primary-container": "#00533c",
+                        "inverse-surface": "#2c2f42",
+                        "surface-container": "#ececff",
+                        "background": "#fbf8ff",
+                        "on-secondary-fixed-variant": "#474649",
+                        "primary-hover": "#00B88A",
+                        "on-primary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "sidebar-width": "240px",
+                        "base": "8px",
+                        "max-content-width": "1200px",
+                        "card-padding": "24px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "caption": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", {"lineHeight": "21px", "fontWeight": "400"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "caption": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-xl": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-page-bg text-on-surface">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter h-16 bg-surface-container-lowest border-b border-border-subtle shadow-sm">
+<div class="flex items-center gap-4">
+<span class="text-headline-md font-headline-md font-bold text-on-surface">Weekly Review Pulse</span>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<span class="text-primary font-bold border-b-2 border-primary text-label-md font-label-md py-5">Week ending 19 May 2026</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-label-md font-label-md text-status-success bg-status-success/10 px-3 py-1 rounded-full">PII cleared ✓</span>
+</div>
+</header>
+<!-- Side Navigation -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-[240px] flex flex-col py-4 bg-surface-container-lowest border-r border-border-subtle hidden md:flex">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-status-success rounded-lg flex items-center justify-center text-white font-bold">G</div>
+<div>
+<p class="text-on-surface text-body-lg font-headline-md font-bold">App Reviews</p>
+<p class="text-text-muted text-label-md">Weekly Review Pulse</p>
+</div>
+</div>
+</div>
+<nav class="flex-1">
+<a class="flex items-center gap-3 px-6 py-3 bg-surface-container-low text-primary border-l-4 border-primary font-bold translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-label-md font-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-secondary hover:bg-surface-bright transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="text-label-md font-label-md">Weekly Pulse</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-secondary hover:bg-surface-bright transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="category">category</span>
+<span class="text-label-md font-label-md">Themes</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-secondary hover:bg-surface-bright transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+<span class="text-label-md font-label-md">Pipeline</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-secondary hover:bg-surface-bright transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-[240px] pt-24 pb-12 px-gutter min-h-screen">
+<div class="max-w-max-content-width mx-auto">
+<!-- Hero Row -->
+<section class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h1 class="text-headline-xl font-headline-xl text-on-surface mb-2">This week's pulse</h1>
+<p class="text-body-lg font-body-lg text-text-muted">Executive summary from mobile app reviews</p>
+</div>
+<a class="text-status-success font-bold hover:underline flex items-center gap-1 group" href="#">
+                    Read full pulse 
+                    <span class="material-symbols-outlined transition-transform group-hover:translate-x-1" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</section>
+<!-- Metric Cards Grid -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<!-- Card 1 -->
+<div class="bg-card-surface rounded-xl p-card-padding shadow-[0_1px_3px_rgba(0,0,0,0.06)] border border-border-subtle">
+<p class="text-body-md font-body-md text-text-muted mb-2">Reviews analyzed</p>
+<div class="flex items-baseline gap-3">
+<span class="text-headline-xl font-headline-xl text-on-surface">848</span>
+<span class="text-status-success flex items-center text-label-md font-label-md bg-status-success/10 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[16px]" data-icon="trending_up">trending_up</span>
+                            12%
+                        </span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-card-surface rounded-xl p-card-padding shadow-[0_1px_3px_rgba(0,0,0,0.06)] border border-border-subtle">
+<p class="text-body-md font-body-md text-text-muted mb-2">Word count</p>
+<div class="flex items-baseline gap-2">
+<span class="text-headline-xl font-headline-xl text-status-success">120</span>
+<span class="text-body-lg font-body-lg text-text-muted">/ 250 max</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-card-surface rounded-xl p-card-padding shadow-[0_1px_3px_rgba(0,0,0,0.06)] border border-border-subtle">
+<p class="text-body-md font-body-md text-text-muted mb-2">PII gate</p>
+<div class="mt-2">
+<span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-status-success/10 text-status-success font-bold text-label-md">
+<span class="material-symbols-outlined text-[18px]" data-icon="verified_user">verified_user</span>
+                            Passed
+                        </span>
+</div>
+</div>
+</section>
+<!-- Themes & Insights Layout -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+<!-- Top 3 Themes Card -->
+<div class="lg:col-span-7 bg-card-surface rounded-xl p-card-padding shadow-[0_1px_3px_rgba(0,0,0,0.06)] border border-border-subtle">
+<div class="flex items-center justify-between mb-8">
+<h2 class="text-headline-md font-headline-md text-on-surface">Top 3 themes</h2>
+<span class="material-symbols-outlined text-text-muted" data-icon="more_horiz">more_horiz</span>
+</div>
+<div class="space-y-8">
+<!-- Theme 1 -->
+<div class="space-y-2">
+<div class="flex justify-between items-center text-body-md font-body-md">
+<span class="font-semibold">Payments</span>
+<span class="text-text-muted">40%</span>
+</div>
+<div class="h-3 w-full bg-border-subtle rounded-full overflow-hidden">
+<div class="h-full bg-status-success rounded-full bar-transition" style="width: 40%"></div>
+</div>
+</div>
+<!-- Theme 2 -->
+<div class="space-y-2">
+<div class="flex justify-between items-center text-body-md font-body-md">
+<span class="font-semibold">Onboarding</span>
+<span class="text-text-muted">30%</span>
+</div>
+<div class="h-3 w-full bg-border-subtle rounded-full overflow-hidden">
+<div class="h-full bg-status-success rounded-full bar-transition" style="width: 30%"></div>
+</div>
+</div>
+<!-- Theme 3 -->
+<div class="space-y-2">
+<div class="flex justify-between items-center text-body-md font-body-md">
+<span class="font-semibold">Statements</span>
+<span class="text-text-muted">25%</span>
+</div>
+<div class="h-3 w-full bg-border-subtle rounded-full overflow-hidden">
+<div class="h-full bg-status-success rounded-full bar-transition" style="width: 25%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Cards -->
+<div class="lg:col-span-5 flex flex-col gap-6">
+<!-- Google Doc Card -->
+<div class="bg-card-surface rounded-xl p-card-padding shadow-[0_1px_3px_rgba(0,0,0,0.06)] border border-border-subtle flex items-start gap-4">
+<div class="w-12 h-12 bg-[#F1F3F4] rounded-lg flex items-center justify-center text-blue-500">
+<span class="material-symbols-outlined text-[32px]" data-icon="description">description</span>
+</div>
+<div class="flex-1">
+<h3 class="text-body-lg font-headline-md font-bold mb-1">Google Doc</h3>
+<p class="text-body-md text-text-muted mb-4">Open weekly document</p>
+<button class="px-4 py-2 bg-white border border-status-success text-status-success rounded-lg font-semibold text-label-md hover:bg-status-success/5 transition-colors flex items-center gap-2">
+                                Open in Docs
+                                <span class="material-symbols-outlined text-[16px]" data-icon="open_in_new">open_in_new</span>
+</button>
+</div>
+</div>
+<!-- Gmail Draft Card -->
+<div class="bg-card-surface rounded-xl p-card-padding shadow-[0_1px_3px_rgba(0,0,0,0.06)] border border-border-subtle flex items-start gap-4">
+<div class="w-12 h-12 bg-[#F1F3F4] rounded-lg flex items-center justify-center text-red-500">
+<span class="material-symbols-outlined text-[32px]" data-icon="mail">mail</span>
+</div>
+<div class="flex-1">
+<h3 class="text-body-lg font-headline-md font-bold mb-1">Gmail draft</h3>
+<p class="text-body-md text-text-muted mb-4">Review before sending</p>
+<button class="px-4 py-2 bg-white border border-status-success text-status-success rounded-lg font-semibold text-label-md hover:bg-status-success/5 transition-colors">
+                                Open Drafts
+                            </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Info Strip -->
+<div class="bg-white/50 border border-border-subtle rounded-lg px-6 py-3 flex items-center gap-4 text-caption font-caption text-text-muted">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]" data-icon="history">history</span>
+                    Last pipeline run · 19 May 2026, 19:23 UTC
+                </span>
+<span class="w-1 h-1 bg-border-subtle rounded-full"></span>
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]" data-icon="schedule">schedule</span>
+                    GitHub Actions scheduled Mondays 06:00 UTC
+                </span>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="md:ml-[240px] w-full py-8 text-center mt-auto border-t border-transparent">
+<p class="text-caption font-caption text-text-muted">
+            Data from public App Store &amp; Play exports · Updated via weekly pipeline
+        </p>
+</footer>
+<script>
+        // Optional: Animate bars on load
+        window.addEventListener('load', () => {
+            const bars = document.querySelectorAll('.bar-transition');
+            bars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 100);
+            });
+        });
+
+        // Hover effect for metrics
+        document.querySelectorAll('.bg-card-surface').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+                card.style.transition = 'transform 0.2s ease';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body></html>

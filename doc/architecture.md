@@ -14,8 +14,9 @@ This document defines the **system architecture** for the Milestone 3 AI agent t
 | **Public data only** | Ingest from exported CSV/JSON files — no authenticated store scraping |
 | **MCP for Google** | Docs and Gmail are **only** reached through Workspace MCP tools in Cursor — no `googleapis` in app code |
 | **Reproducibility** | Versioned prompts, saved intermediate JSON, deterministic date windows (8–12 weeks) |
+| **Readable delivery** | Phase 8 web dashboard surfaces pulse, themes, and publish status for non-CLI users |
 
-**High-level pattern:** **Ingest → Normalize → Cluster → Summarize → Sanitize → Publish (MCP)**.
+**High-level pattern:** **Ingest → Normalize → Cluster → Summarize → Sanitize → Publish (MCP) → Present (web UI)**.
 
 ---
 
@@ -52,9 +53,19 @@ flowchart LR
 
   DOC --> U
   MAIL --> U
+
+  subgraph ui [Phase 8 Web UI]
+    WEB[React dashboard]
+    BFF[FastAPI BFF]
+  end
+
+  GN --> BFF
+  PII --> BFF
+  BFF --> WEB
+  WEB --> U
 ```
 
-The **agent** runs inside Cursor (or an SDK-driven agent with the same MCP servers attached). It uses **local tools** (filesystem, Python scripts, LLM) for review processing and **MCP tools** exclusively for Google Docs and Gmail.
+The **agent** runs inside Cursor (or an SDK-driven agent with the same MCP servers attached). It uses **local tools** (filesystem, Python scripts, LLM) for review processing and **MCP tools** exclusively for Google Docs and Gmail. **Phase 8** adds a browser dashboard that reads pipeline artifacts via a thin API — it does not replace MCP for Google publish.
 
 ---
 
@@ -83,7 +94,19 @@ The **agent** runs inside Cursor (or an SDK-driven agent with the same MCP serve
    data/reviews/         data/themes/                       │ Google Workspace MCP │
    (normalized JSON)    data/weekly/                        │ • create/update Doc  │
                           (draft note JSON)                 │ • create Gmail draft │
-                                                              └──────────────────────┘
+         │                    │                    │                 │
+         └────────────────────┴────────────────────┘                 │
+                              │                                      ▼
+                              ▼                          ┌──────────────────────┐
+                    ┌─────────────────┐                  │ HTTP MCP server      │
+                    │ Phase 8 BFF     │                  │ (Render)             │
+                    │ (read artifacts)│                  └──────────────────────┘
+                    └────────┬────────┘
+                             ▼
+                    ┌─────────────────┐
+                    │ React dashboard │
+                    │ (Vite + TS)     │
+                    └─────────────────┘
 ```
 
 ### 3.1 Ingest pipeline (local)
@@ -226,6 +249,69 @@ Exact package name and env vars follow the chosen MCP server’s README. OAuth c
 | Weekly note | Google Doc titled `Weekly Review Pulse — Groww — <date>` | Same week → update same Doc id stored in `data/weekly/publish_state.json` |
 | Email | Gmail draft to `SELF_EMAIL` or alias | New draft each run unless MCP supports update-by-draft-id |
 
+### 3.6 Web dashboard (Phase 8 — presentation layer)
+
+**Responsibility:** Present the weekly pulse, theme analytics, and pipeline/publish status in a **proper frontend** for product, support, and leadership. Read-only by default; optional admin actions via BFF.
+
+**Stack:**
+
+| Layer | Technology | Role |
+|-------|------------|------|
+| UI | React 18, Vite, TypeScript, Tailwind CSS | Pages, components, charts |
+| BFF | FastAPI (`pipelines/phase8_frontend/api/`) | Serve JSON from `data/`; optional run/publish proxies |
+| Data | Existing artifacts | `note.json`, `ranked.json`, `publish_state.json`, `blockers.json` |
+
+**Does not:**
+
+- Import `googleapis` or embed Google OAuth in the browser
+- Display `review_id`, raw reviewer handles, or full export rows
+- Store API keys in `localStorage`
+
+**Core UI modules:**
+
+```text
+┌─────────────────────────────────────────────────────────────┐
+│ AppShell (nav: Dashboard | Pulse | Themes | Pipeline | ⚙)   │
+├─────────────────────────────────────────────────────────────┤
+│  Dashboard          │  PulsePage          │  ThemesPage        │
+│  • week snapshot    │  • note.md render   │  • rank list       │
+│  • PII chip         │  • note.json panels │  • share chart     │
+│  • Doc/Draft links  │  • word count badge │  • theme drawer    │
+├─────────────────────┴─────────────────────┴────────────────────┤
+│  PipelinePage                    │  SettingsPage              │
+│  • phase 1–7 stepper             │  • week selector           │
+│  • blockers alert                │  • API URL (dev)             │
+│  • GHA schedule info             │                            │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**API surface (BFF):**
+
+| Endpoint | Source artifact |
+|----------|-----------------|
+| `GET /api/v1/pulse/latest` | `data/weekly/note.json`, `note.md` |
+| `GET /api/v1/themes/ranked` | `data/themes/ranked.json` |
+| `GET /api/v1/themes/clusters` | `data/themes/clusters.json` (aggregates only in UI) |
+| `GET /api/v1/pipeline/status` | `blockers.json`, artifact presence, validators |
+| `GET /api/v1/publish/state` | `data/weekly/publish_state.json` |
+
+**Publish UX:** `DocLinkCard` and `DraftLinkCard` open `doc_url` and Gmail Drafts in a new tab — same URLs as Phase 5–6, no in-app Google SDK.
+
+**Deployment pattern:**
+
+```text
+[GitHub Actions / local scripts] → data/*.json
+                                        │
+                                        ▼
+                                 FastAPI BFF
+                                        │
+                                        ▼
+                              Static React (CDN)
+                                        │
+                                        ▼
+                                    Browser
+```
+
 ---
 
 ## 4. MCP vs local boundary
@@ -239,10 +325,12 @@ Exact package name and env vars follow the chosen MCP server’s README. OAuth c
 │ Theme clustering & ranking           │  │ OAuth token lifecycle (inside MCP)   │
 │ Note generation & word-count check   │  │                                      │
 │ PII sanitization                     │  │ ❌ Do NOT duplicate with googleapis   │
+│ Phase 8 BFF (read artifacts)         │  │                                      │
+│ React UI (display + external links)  │  │                                      │
 └─────────────────────────────────────┘  └─────────────────────────────────────┘
 ```
 
-**Rule:** If an operation touches Gmail or Google Docs, the agent must invoke an MCP tool visible in Cursor’s MCP tool list. Python/Node code in this repo must not import Google API client libraries for those surfaces.
+**Rule:** If an operation touches Gmail or Google Docs, the agent must invoke an MCP tool visible in Cursor’s MCP tool list (or the HTTP MCP server via `publish_*.py`). Python/Node code in this repo must not import Google API client libraries for those surfaces. The Phase 8 frontend links out to Google; it does not embed Docs/Gmail clients.
 
 ---
 
@@ -265,6 +353,7 @@ Exact package name and env vars follow the chosen MCP server’s README. OAuth c
 5. Agent **CallMcpTool** → create/update Doc with `note.md` body
 6. Agent **CallMcpTool** → create Gmail draft (subject + plain/HTML body)
 7. Write `publish_state.json` (doc id, draft id, timestamp)
+8. (Phase 8) BFF serves artifacts → dashboard refreshes for stakeholders
 
 ### 5.3 Prompting strategy
 
@@ -283,22 +372,38 @@ Milestone3/
 ├── doc/
 │   ├── problemStatement.md
 │   ├── architecture.md          ← this file
-│   └── phasewiseImplementationPlan.md
+│   ├── phasewiseImplementationPlan.md
+│   └── runbook.md
+├── frontend/                      # Phase 8 — React + Vite + Tailwind
+│   ├── src/
+│   │   ├── components/            # layout, pulse, themes, pipeline, publish
+│   │   ├── pages/
+│   │   ├── hooks/
+│   │   ├── services/api.ts
+│   │   └── types/pulse.ts
+│   └── package.json
+├── pipelines/
+│   └── phase8_frontend/
+│       └── api/                     # FastAPI BFF — read data/ artifacts
 ├── data/
 │   ├── raw/                       # App Store / Play CSV exports (gitignored if large)
 │   ├── reviews/                   # normalized.jsonl
 │   ├── themes/                    # clusters.json, ranked.json
 │   └── weekly/                    # note.md, note.json, publish_state.json
+│       └── history/               # optional archived weeks (Phase 8)
 ├── prompts/
 │   ├── system.md
 │   ├── themes.md
 │   └── weekly_note.md
 ├── scripts/
 │   ├── ingest_reviews.py
+│   ├── run_weekly_pulse.py
 │   ├── validate_note.py
 │   └── check_pii.py
+├── .github/workflows/
+│   └── weekly_pulse.yml
 └── .cursor/
-    └── rules/                     # optional: MCP-only Google rule
+    └── rules/                     # MCP-only Google rule
 ```
 
 ---
@@ -324,6 +429,7 @@ Milestone3/
 | PII | `check_pii.py` on `note.md` |
 | MCP publish | Manual: open Doc URL and Gmail drafts folder |
 | E2E | One command or agent skill: “Run weekly pulse” |
+| Dashboard | UI loads `/api/v1/pulse/latest`; Lighthouse accessibility smoke |
 
 ---
 
@@ -331,5 +437,6 @@ Milestone3/
 
 - [problemStatement.md](./problemStatement.md) — requirements and constraints
 - [phasewiseImplementationPlan.md](./phasewiseImplementationPlan.md) — phased build order and exit criteria
+- [google-stitch-phase8-ui.md](./google-stitch-phase8-ui.md) — Stitch UI prompts (Groww visual language)
 - [eval/README.md](./eval/README.md) — per-phase `eval.md` testing and sign-off checklists
 - [decision.md](./decision.md) — business and technical decision log (ADR-style)

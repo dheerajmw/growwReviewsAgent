@@ -26,6 +26,10 @@ venv/
 venv/
 .pytest_cache/
 
+# Phase 8 frontend
+frontend/node_modules/
+frontend/dist/
+
 # OS / IDE
 .DS_Store
 .idea/

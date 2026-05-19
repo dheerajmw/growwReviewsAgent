@@ -18,6 +18,7 @@ Phases are **sequential**: each phase produces artifacts and interfaces the next
 | **5** | Publish via MCP (Docs) | Google Doc URL + `publish_state.json` |
 | **6** | Publish via MCP (Gmail) | Gmail draft in mailbox |
 | **7** | E2E workflow + **GitHub Actions scheduler** | Runbook + weekly automated data refresh (CI) |
+| **8** | **Web dashboard (frontend)** | Groww-branded UI for pulse, themes, pipeline status, publish links |
 
 **Testing & exit criteria:** Each phase has an evaluation file under [doc/eval/](./eval/README.md) with automated checks, manual steps, and sign-off checklists.
 
@@ -345,6 +346,196 @@ on:
 
 ---
 
+## Phase 8 — Web dashboard (proper frontend)
+
+**Objective:** A production-quality **web UI** so product, support, and leadership can read the weekly pulse, explore themes, and see pipeline/publish status **without** opening raw JSON or running CLI commands.
+
+**Depends on:** Phases 1–7 (artifacts + optional API). Frontend **does not** replace MCP publish — it **displays** outputs and may **trigger** backend/orchestration endpoints.
+
+### 8.1 Technology stack (recommended)
+
+| Layer | Choice | Notes |
+|-------|--------|--------|
+| **Framework** | React 18 + **Vite** + TypeScript | Fast dev; static deploy |
+| **Styling** | **Tailwind CSS** + design tokens | Groww-aligned greens, clean cards |
+| **Routing** | React Router | `/`, `/pulse`, `/themes`, `/pipeline`, `/settings` |
+| **Charts** | Recharts or Chart.js | Theme share, rating distribution |
+| **API client** | TanStack Query (React Query) | Cache weekly payloads |
+| **Backend (BFF)** | **FastAPI** (`pipelines/phase8_frontend/api/`) | Read-only JSON from `data/`; optional `POST /run` proxy |
+| **Deploy** | Vercel / Netlify (UI) + Render/Railway (API) or single FastAPI serving static build | Env: `VITE_API_BASE_URL` |
+
+**Out of scope for Phase 8:** `googleapis` in frontend or BFF; OAuth to Google in the browser. Doc/Gmail are **links** to URLs in `publish_state.json` or buttons that call existing MCP HTTP scripts server-side.
+
+### 8.2 Repository layout
+
+```text
+frontend/
+├── package.json
+├── vite.config.ts
+├── tailwind.config.js
+├── index.html
+├── public/                        # favicon, Groww pulse logo
+└── src/
+    ├── main.tsx
+    ├── App.tsx
+    ├── routes/
+    │   ├── DashboardPage.tsx      # landing summary
+    │   ├── PulsePage.tsx          # weekly note reader
+    │   ├── ThemesPage.tsx         # clusters + ranked
+    │   ├── PipelinePage.tsx       # run status + logs
+    │   └── SettingsPage.tsx       # week selector, env hints
+    ├── components/
+    │   ├── layout/
+    │   │   ├── AppShell.tsx       # header, nav, footer
+    │   │   ├── Sidebar.tsx
+    │   │   └── PageHeader.tsx
+    │   ├── pulse/
+    │   │   ├── PulseHero.tsx      # title, week-ending date
+    │   │   ├── ThemeSummaryCards.tsx   # top 3
+    │   │   ├── QuotesPanel.tsx
+    │   │   ├── ActionsPanel.tsx
+    │   │   └── WordCountBadge.tsx # ≤250 indicator
+    │   ├── themes/
+    │   │   ├── ThemeRankList.tsx
+    │   │   ├── ThemeShareChart.tsx
+    │   │   └── ThemeDetailDrawer.tsx
+    │   ├── pipeline/
+    │   │   ├── PhaseStepper.tsx   # phases 1–7 status
+    │   │   ├── PiiGateBanner.tsx
+    │   │   ├── BlockersAlert.tsx
+    │   │   └── RunActionsBar.tsx  # trigger refresh (if API wired)
+    │   ├── publish/
+    │   │   ├── DocLinkCard.tsx
+    │   │   └── DraftLinkCard.tsx
+    │   └── common/
+    │       ├── LoadingSpinner.tsx
+    │       ├── ErrorState.tsx
+    │       ├── EmptyState.tsx
+    │       └── StatusChip.tsx
+    ├── hooks/
+    │   ├── useWeeklyPulse.ts
+    │   ├── useThemes.ts
+    │   └── usePublishState.ts
+    ├── services/
+    │   └── api.ts                 # fetch /api/v1/*
+    └── types/
+        └── pulse.ts               # mirrors note.json schema
+
+pipelines/phase8_frontend/
+├── README.md
+└── api/
+    ├── main.py                    # FastAPI app
+    ├── routes/
+    │   ├── pulse.py
+    │   ├── themes.py
+    │   ├── pipeline.py
+    │   └── health.py
+    └── services/
+        └── artifacts.py           # read data/weekly, data/themes
+```
+
+### 8.3 Backend API contract (read-only minimum)
+
+| Method | Path | Response |
+|--------|------|----------|
+| `GET` | `/api/v1/health` | `{ "status": "ok" }` |
+| `GET` | `/api/v1/pulse/latest` | `note.json` + rendered `note.md` metadata |
+| `GET` | `/api/v1/pulse/weeks` | list of available `week_ending` (from history or publish_state) |
+| `GET` | `/api/v1/themes/ranked` | `ranked.json` |
+| `GET` | `/api/v1/themes/clusters` | `clusters.json` (summary counts only; no raw `review_id` in UI) |
+| `GET` | `/api/v1/pipeline/status` | PII pass/fail, `blockers.json`, last run timestamps from `publish_state.json` |
+| `GET` | `/api/v1/publish/state` | `doc_url`, `draft_url`, `draft_id`, `published_at` |
+
+**Optional (admin):**
+
+| Method | Path | Behavior |
+|--------|------|----------|
+| `POST` | `/api/v1/pipeline/run` | Trigger `run_weekly_pulse.py` subprocess (auth required); return job id |
+| `POST` | `/api/v1/publish/doc` | Proxy to MCP `append_to_doc` (server env secrets) |
+| `POST` | `/api/v1/publish/draft` | Proxy to MCP `create_email_draft` |
+
+### 8.4 UI pages and components (required)
+
+#### Dashboard (`/`)
+
+- **Weekly snapshot card** — week ending, word count, PII status chip
+- **Top 3 themes** — mini bars from `pct_of_sample`
+- **Quick links** — Open Google Doc, Open Gmail Drafts (external)
+- **Last pipeline run** — time from `publish_state.json` or GHA badge (optional)
+
+#### Weekly pulse (`/pulse`)
+
+- Render `note.md` as styled HTML (sanitized markdown)
+- Side panel: structured `note.json` sections
+- **PII gate badge** — green if last `check_pii` passed; red + link to blockers if failed
+
+#### Themes (`/themes`)
+
+- Bar/donut chart: all themes (≤5) with review counts
+- Table: rank, label, % sample, low-rating count
+- No per-review PII; no `review_id` displayed
+
+#### Pipeline (`/pipeline`)
+
+- **Phase stepper** — 1 ingest → 7 E2E with check/x/pending from artifact presence
+- **GitHub Actions** — link to repo Actions tab; note cron schedule (Mon 06:00 UTC)
+- **Runbook link** — `doc/runbook.md`
+- Optional: “Refresh data” button (if BFF run endpoint enabled)
+
+#### Settings (`/settings`)
+
+- Week selector (when multiple weeks archived under `data/weekly/history/`)
+- Display-only env checklist (Doc ID configured yes/no — never show secrets)
+- API base URL for local dev
+
+### 8.5 Design system (Groww-aligned)
+
+| Token | Usage |
+|-------|--------|
+| Primary green | CTAs, active nav, success states |
+| Neutral grays | Backgrounds, borders |
+| Typography | System UI or Inter; clear hierarchy (H1 pulse title, H2 sections) |
+| Spacing | 8px grid; card padding 16–24px |
+| Accessibility | WCAG AA contrast; focus rings; semantic headings |
+
+**Responsive:** Mobile-first; sidebar collapses to hamburger on &lt;768px.
+
+### 8.6 Security and data rules
+
+- Frontend **never** stores `GROQ_API_KEY` or Google tokens in browser storage.
+- Do not expose `review_id`, raw reviewer text, or emails in API responses for public deploy.
+- Sanitized note only; align with Phase 4 PII policy.
+- CORS: BFF allows only configured `FRONTEND_ORIGIN`.
+- Optional: simple API key or HTTP basic on BFF for staging.
+
+### 8.7 Activities (implementation order)
+
+1. **Design UI in Google Stitch** — use prompts in [google-stitch-phase8-ui.md](./google-stitch-phase8-ui.md) (Groww visual language).
+2. Scaffold `frontend/` (Vite + React + TS + Tailwind).
+3. Implement `pipelines/phase8_frontend/api` — read artifacts from `data/`.
+4. Build layout + routing + shared components (match Stitch specs).
+5. Implement Dashboard, Pulse, Themes, Pipeline pages wired to API.
+6. Add publish link cards from `publish_state.json`.
+7. Add `scripts/serve_dashboard.sh` or document `uvicorn` + `npm run dev`.
+8. Optional: archive prior weeks to `data/weekly/history/YYYY-MM-DD/`.
+9. Deploy frontend + API; smoke test on mobile and desktop.
+
+### 8.8 Exit criteria
+
+- [ ] Dashboard loads latest pulse in &lt;3s on local dev
+- [ ] All five routes render without console errors
+- [ ] Top 3 themes, quotes, actions match `note.json`
+- [ ] Theme chart matches `ranked.json` counts
+- [ ] PII/blocker state reflected on Pipeline page
+- [ ] Doc and Gmail draft open via external links (no embedded Google OAuth)
+- [ ] Responsive layout verified at 375px and 1280px widths
+- [ ] No `googleapis` / Gmail SDK in `frontend/` or Phase 8 API
+- [ ] README section: how to run UI alongside existing pipeline
+
+**Evaluation:** [doc/eval/phase-08/eval.md](./eval/phase-08/eval.md)
+
+---
+
 ## Dependency diagram
 
 ```mermaid
@@ -357,13 +548,20 @@ flowchart TD
   P5[Phase 5: Docs MCP]
   P6[Phase 6: Gmail MCP]
   P7[Phase 7: E2E + GHA scheduler]
+  P8[Phase 8: Web dashboard]
   GHA[GitHub Actions cron]
+  UI[Browser]
 
   P0 --> P5
   P0 --> P6
   P1 --> P2 --> P3 --> P4 --> P5 --> P6 --> P7
   GHA --> P1
   GHA --> P7
+  P3 --> P8
+  P5 --> P8
+  P6 --> P8
+  P7 --> P8
+  P8 --> UI
 ```
 
 ---
@@ -379,6 +577,7 @@ flowchart TD
 | 4 | 0.5 day |
 | 5–6 | 0.5–1 day (MCP tool familiarity) |
 | 7 | 1 day (runbook + GHA workflow + first scheduled/dispatch test) |
+| 8 | 2–3 days (UI + BFF + deploy) |
 
 ---
 
@@ -393,6 +592,7 @@ flowchart TD
 | Google Doc | 5 |
 | Gmail draft | 6 |
 | Repeatable agent + weekly scheduled refresh | 7 |
+| Leadership-friendly web view of pulse + themes | 8 |
 
 ---
 
@@ -400,5 +600,6 @@ flowchart TD
 
 - [problemStatement.md](./problemStatement.md)
 - [architecture.md](./architecture.md)
+- [google-stitch-phase8-ui.md](./google-stitch-phase8-ui.md) — Google Stitch prompts for Phase 8 UI
 - [eval/README.md](./eval/README.md) — phase evaluation index
 - [decision.md](./decision.md) — business and technical decision log

@@ -14,6 +14,7 @@ Each implementation phase has an **`eval.md`** with automated checks, manual ste
 | 5 | Google Docs (MCP) | [phase-05/eval.md](./phase-05/eval.md) |
 | 6 | Gmail draft (MCP) | [phase-06/eval.md](./phase-06/eval.md) |
 | 7 | E2E + GHA scheduler | [phase-07/eval.md](./phase-07/eval.md) |
+| 8 | Web dashboard | [phase-08/eval.md](./phase-08/eval.md) |
 
 ## Quick validation bundle
 

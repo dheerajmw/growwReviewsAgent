@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Review Themes | Weekly Review Pulse</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "text-muted": "#7C7E8C",
+                        "surface-container-low": "#f3f2ff",
+                        "surface-bright": "#fbf8ff",
+                        "outline": "#6b7b72",
+                        "primary-container": "#00d09c",
+                        "on-primary-fixed": "#002116",
+                        "status-error": "#DF514C",
+                        "primary": "#006c4f",
+                        "on-error-container": "#93000a",
+                        "status-warning": "#F5A623",
+                        "secondary-fixed-dim": "#c8c6c8",
+                        "secondary": "#5f5e60",
+                        "on-background": "#171a2c",
+                        "tertiary-container": "#ffa15b",
+                        "surface-container-high": "#e5e6ff",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed": "#59fdc5",
+                        "on-surface": "#171a2c",
+                        "page-bg": "#F6F7F9",
+                        "error-container": "#ffdad6",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#713700",
+                        "status-info": "#5367FF",
+                        "tertiary-fixed-dim": "#ffb785",
+                        "on-secondary-container": "#636264",
+                        "border-subtle": "#E9E9EB",
+                        "on-tertiary-fixed": "#301400",
+                        "inverse-on-surface": "#f0efff",
+                        "secondary-fixed": "#e4e2e4",
+                        "surface-dim": "#d7d8f1",
+                        "error": "#ba1a1a",
+                        "outline-variant": "#bacac1",
+                        "card-surface": "#FFFFFF",
+                        "inverse-primary": "#2fe0aa",
+                        "tertiary-fixed": "#ffdcc6",
+                        "on-secondary-fixed": "#1b1b1d",
+                        "surface-container-highest": "#dfe1fa",
+                        "surface-tint": "#006c4f",
+                        "on-surface-variant": "#3c4a43",
+                        "on-primary-fixed-variant": "#00513b",
+                        "secondary-container": "#e2dfe1",
+                        "status-success": "#00D09C",
+                        "surface-variant": "#dfe1fa",
+                        "on-error": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "tertiary": "#934b07",
+                        "surface": "#fbf8ff",
+                        "primary-fixed-dim": "#2fe0aa",
+                        "on-tertiary-container": "#733800",
+                        "on-primary-container": "#00533c",
+                        "inverse-surface": "#2c2f42",
+                        "surface-container": "#ececff",
+                        "background": "#fbf8ff",
+                        "on-secondary-fixed-variant": "#474649",
+                        "primary-hover": "#00B88A",
+                        "on-primary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "sidebar-width": "240px",
+                        "base": "8px",
+                        "max-content-width": "1200px",
+                        "card-padding": "24px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "caption": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", {"lineHeight": "21px", "fontWeight": "400"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "caption": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-xl": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #F6F7F9; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .custom-shadow { shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .chart-bar-transition { transition: width 1s ease-in-out; }
+        .drawer-transition { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter h-16 bg-surface-container-lowest border-b border-border-subtle shadow-sm">
+<div class="flex items-center gap-4">
+<span class="text-headline-md font-headline-md font-bold text-on-surface">Weekly Review Pulse</span>
+</div>
+<div class="flex items-center gap-6">
+<span class="text-primary font-bold border-b-2 border-primary py-2 text-label-md font-label-md">Week ending 19 May 2026</span>
+<span class="text-text-muted text-label-md font-label-md">PII cleared ✓</span>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-[240px] flex flex-col py-4 bg-surface-container-lowest border-r border-border-subtle">
+<div class="px-6 mb-8">
+<h2 class="text-body-lg font-headline-md text-on-surface">App Reviews</h2>
+<p class="text-caption font-caption text-text-muted">Weekly Review Pulse</p>
+</div>
+<nav class="flex-1">
+<a class="flex items-center gap-3 px-6 py-3 text-secondary hover:bg-surface-bright transition-all text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-6 py-3 text-secondary hover:bg-surface-bright transition-all text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined">analytics</span>
+                Weekly Pulse
+            </a>
+<a class="flex items-center gap-3 px-6 py-3 bg-surface-container-low text-primary border-l-4 border-primary font-bold translate-x-1 transition-transform text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">category</span>
+                Themes
+            </a>
+<a class="flex items-center gap-3 px-6 py-3 text-secondary hover:bg-surface-bright transition-all text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+                Pipeline
+            </a>
+<a class="flex items-center gap-3 px-6 py-3 text-secondary hover:bg-surface-bright transition-all text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined">settings</span>
+                Settings
+            </a>
+</nav>
+<div class="px-6 py-4 mt-auto">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold text-xs">GR</div>
+<div class="flex flex-col">
+<span class="text-label-md font-label-md font-bold">Groww Admin</span>
+<span class="text-[10px] text-text-muted">Insights Team</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-[240px] mt-16 p-gutter min-h-[calc(100vh-64px)] flex flex-col gap-6 max-w-max-content-width mx-auto">
+<!-- Header Section -->
+<section class="flex flex-col gap-1">
+<h1 class="text-headline-xl font-headline-xl text-on-surface">Review themes</h1>
+<p class="text-body-md font-body-md text-text-muted">Up to 5 themes from sampled App Store &amp; Play reviews</p>
+</section>
+<!-- Row 1: Analytics Overview -->
+<section class="grid grid-cols-1 md:grid-cols-10 gap-6">
+<!-- Left: Share of Voice (60%) -->
+<div class="md:col-span-6 bg-card-surface p-card-padding rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.06)] border border-border-subtle">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-body-md font-body-md text-text-muted">Share of voice</h3>
+<span class="material-symbols-outlined text-text-muted cursor-help" title="Proportional distribution of review topics">info</span>
+</div>
+<div class="flex flex-col gap-5">
+<!-- Custom Horizontal Bar Chart -->
+<div class="space-y-4">
+<div class="space-y-1">
+<div class="flex justify-between text-label-md font-label-md">
+<span>Payments</span>
+<span class="font-bold">42%</span>
+</div>
+<div class="h-2 w-full bg-border-subtle rounded-full overflow-hidden">
+<div class="h-full bg-primary-container rounded-full chart-bar-transition" style="width: 42%"></div>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between text-label-md font-label-md">
+<span>Onboarding</span>
+<span class="font-bold">28%</span>
+</div>
+<div class="h-2 w-full bg-border-subtle rounded-full overflow-hidden">
+<div class="h-full bg-[#00B88A] rounded-full chart-bar-transition" style="width: 28%"></div>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between text-label-md font-label-md">
+<span>Statements</span>
+<span class="font-bold">15%</span>
+</div>
+<div class="h-2 w-full bg-border-subtle rounded-full overflow-hidden">
+<div class="h-full bg-[#00A37A] rounded-full chart-bar-transition" style="width: 15%"></div>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between text-label-md font-label-md">
+<span>Withdrawals</span>
+<span class="font-bold">10%</span>
+</div>
+<div class="h-2 w-full bg-border-subtle rounded-full overflow-hidden">
+<div class="h-full bg-[#008F6A] rounded-full chart-bar-transition" style="width: 10%"></div>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between text-label-md font-label-md">
+<span>KYC</span>
+<span class="font-bold">5%</span>
+</div>
+<div class="h-2 w-full bg-border-subtle rounded-full overflow-hidden">
+<div class="h-full bg-secondary-fixed-dim rounded-full chart-bar-transition" style="width: 5%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: Sample Summary (40%) -->
+<div class="md:col-span-4 flex flex-col gap-6">
+<!-- Sample Size Card -->
+<div class="bg-card-surface p-card-padding rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.06)] border border-border-subtle flex-1 flex flex-col justify-center">
+<h3 class="text-body-md font-body-md text-text-muted mb-2">Sample size</h3>
+<div class="flex items-baseline gap-2">
+<span class="text-headline-xl font-headline-xl text-primary">450</span>
+<span class="text-body-md text-text-muted">reviews</span>
+</div>
+<div class="mt-4 flex items-center gap-2 text-status-success font-bold text-label-md">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span>+12.4% vs last week</span>
+</div>
+</div>
+<!-- Stores Card -->
+<div class="bg-card-surface p-card-padding rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.06)] border border-border-subtle flex-1 flex flex-col justify-center">
+<h3 class="text-body-md font-body-md text-text-muted mb-4">Stores</h3>
+<div class="flex gap-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-low flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">shop</span>
+</div>
+<div class="flex flex-col">
+<span class="text-label-md font-bold">Play Store</span>
+<span class="text-caption text-text-muted">65% of sample</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-low flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">phone_iphone</span>
+</div>
+<div class="flex flex-col">
+<span class="text-label-md font-bold">App Store</span>
+<span class="text-caption text-text-muted">35% of sample</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Row 2: Ranked Themes Table -->
+<section class="bg-card-surface rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.06)] border border-border-subtle overflow-hidden">
+<div class="px-card-padding py-4 border-b border-border-subtle flex justify-between items-center">
+<h3 class="text-headline-md font-headline-md">Ranked themes</h3>
+<button class="text-primary hover:bg-surface-container-low px-3 py-1 rounded text-label-md font-bold transition-colors">Export CSV</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-bright">
+<th class="px-6 py-4 text-label-md font-label-md text-text-muted">Rank</th>
+<th class="px-6 py-4 text-label-md font-label-md text-text-muted">Theme</th>
+<th class="px-6 py-4 text-label-md font-label-md text-text-muted">Reviews</th>
+<th class="px-6 py-4 text-label-md font-label-md text-text-muted">% of sample</th>
+<th class="px-6 py-4 text-label-md font-label-md text-text-muted">Low ratings (1–2★)</th>
+</tr>
+</thead>
+<tbody class="text-body-md divide-y divide-border-subtle">
+<tr class="group cursor-pointer hover:bg-surface-container-low transition-colors" onclick="openThemeDetail('Payments')">
+<td class="px-6 py-4 font-bold border-l-4 border-primary">#1</td>
+<td class="px-6 py-4 font-medium">Payments</td>
+<td class="px-6 py-4">189</td>
+<td class="px-6 py-4">42.0%</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="h-1.5 w-24 bg-border-subtle rounded-full">
+<div class="h-full bg-status-error rounded-full" style="width: 18%"></div>
+</div>
+<span class="text-caption font-bold text-status-error">18%</span>
+</div>
+</td>
+</tr>
+<tr class="group cursor-pointer hover:bg-surface-container-low transition-colors" onclick="openThemeDetail('Onboarding')">
+<td class="px-6 py-4 font-bold border-l-4 border-primary">#2</td>
+<td class="px-6 py-4 font-medium">Onboarding</td>
+<td class="px-6 py-4">126</td>
+<td class="px-6 py-4">28.0%</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="h-1.5 w-24 bg-border-subtle rounded-full">
+<div class="h-full bg-status-error rounded-full" style="width: 24%"></div>
+</div>
+<span class="text-caption font-bold text-status-error">24%</span>
+</div>
+</td>
+</tr>
+<tr class="group cursor-pointer hover:bg-surface-container-low transition-colors" onclick="openThemeDetail('Statements')">
+<td class="px-6 py-4 font-bold border-l-4 border-primary">#3</td>
+<td class="px-6 py-4 font-medium">Statements</td>
+<td class="px-6 py-4">68</td>
+<td class="px-6 py-4">15.1%</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="h-1.5 w-24 bg-border-subtle rounded-full">
+<div class="h-full bg-status-error rounded-full" style="width: 8%"></div>
+</div>
+<span class="text-caption font-bold text-status-error">8%</span>
+</div>
+</td>
+</tr>
+<tr class="group cursor-pointer hover:bg-surface-container-low transition-colors" onclick="openThemeDetail('Withdrawals')">
+<td class="px-6 py-4 text-text-muted">#4</td>
+<td class="px-6 py-4 font-medium">Withdrawals</td>
+<td class="px-6 py-4">45</td>
+<td class="px-6 py-4">10.0%</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="h-1.5 w-24 bg-border-subtle rounded-full">
+<div class="h-full bg-status-error rounded-full" style="width: 31%"></div>
+</div>
+<span class="text-caption font-bold text-status-error">31%</span>
+</div>
+</td>
+</tr>
+<tr class="group cursor-pointer hover:bg-surface-container-low transition-colors" onclick="openThemeDetail('KYC')">
+<td class="px-6 py-4 text-text-muted">#5</td>
+<td class="px-6 py-4 font-medium">KYC</td>
+<td class="px-6 py-4">22</td>
+<td class="px-6 py-4">4.9%</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="h-1.5 w-24 bg-border-subtle rounded-full">
+<div class="h-full bg-status-error rounded-full" style="width: 45%"></div>
+</div>
+<span class="text-caption font-bold text-status-error">45%</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Footer -->
+<footer class="w-full py-8 text-center mt-auto border-t border-border-subtle/50">
+<p class="text-caption font-caption text-text-muted">Data from public App Store &amp; Play exports · Updated via weekly pipeline</p>
+</footer>
+</main>
+<!-- Theme Detail Drawer -->
+<div class="fixed inset-y-0 right-0 w-[400px] bg-card-surface shadow-[-4px_0_12px_rgba(0,0,0,0.1)] z-[100] translate-x-full drawer-transition flex flex-col" id="themeDrawer">
+<div class="px-6 py-6 border-b border-border-subtle flex justify-between items-center">
+<h2 class="text-headline-md font-headline-md text-on-surface" id="drawerTitle">Theme detail</h2>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-bright rounded-full transition-colors" onclick="closeThemeDetail()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="p-6 flex flex-col gap-8 overflow-y-auto">
+<!-- Summary Stats -->
+<div class="grid grid-cols-2 gap-4">
+<div class="p-4 bg-surface-bright rounded-lg">
+<p class="text-caption text-text-muted mb-1">Impact Score</p>
+<p class="text-headline-md font-bold text-primary">High</p>
+</div>
+<div class="p-4 bg-surface-bright rounded-lg">
+<p class="text-caption text-text-muted mb-1">Sentiment</p>
+<p class="text-headline-md font-bold text-status-error">Negative</p>
+</div>
+</div>
+<!-- Description Placeholder -->
+<div class="flex flex-col gap-3">
+<h4 class="text-label-md font-bold text-text-muted uppercase tracking-wider">Theme Description</h4>
+<div class="space-y-4">
+<div class="h-4 bg-surface-container-low rounded-full w-full"></div>
+<div class="h-4 bg-surface-container-low rounded-full w-5/6"></div>
+<div class="h-4 bg-surface-container-low rounded-full w-4/6"></div>
+<div class="h-4 bg-surface-container-low rounded-full w-full"></div>
+</div>
+<p class="text-body-md text-text-muted mt-2 italic">Detailed NLP-generated description placeholder. Individual reviews and user identifiers are suppressed in this executive view to maintain data privacy standards.</p>
+</div>
+<!-- Trend Visualization -->
+<div class="flex flex-col gap-4">
+<h4 class="text-label-md font-bold text-text-muted uppercase tracking-wider">Frequency Trend (7D)</h4>
+<div class="h-32 w-full flex items-end justify-between gap-2 px-2">
+<div class="w-full bg-primary-container/20 rounded-t-sm h-[30%]"></div>
+<div class="w-full bg-primary-container/20 rounded-t-sm h-[45%]"></div>
+<div class="w-full bg-primary-container/20 rounded-t-sm h-[40%]"></div>
+<div class="w-full bg-primary-container/20 rounded-t-sm h-[60%]"></div>
+<div class="w-full bg-primary-container/20 rounded-t-sm h-[55%]"></div>
+<div class="w-full bg-primary-container/40 rounded-t-sm h-[75%]"></div>
+<div class="w-full bg-primary-container rounded-t-sm h-[90%]"></div>
+</div>
+<div class="flex justify-between text-caption text-text-muted px-1">
+<span>Mon</span>
+<span>Sun</span>
+</div>
+</div>
+<!-- Action Area -->
+<div class="mt-auto pt-6 border-t border-border-subtle">
+<button class="w-full py-3 bg-primary text-on-primary font-bold rounded-lg hover:bg-primary-hover transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add_task</span>
+                    Flag for Product Review
+                </button>
+</div>
+</div>
+</div>
+<!-- Overlay -->
+<div class="fixed inset-0 bg-black/20 opacity-0 pointer-events-none transition-opacity z-[90]" id="drawerOverlay" onclick="closeThemeDetail()"></div>
+<script>
+        function openThemeDetail(themeName) {
+            const drawer = document.getElementById('themeDrawer');
+            const overlay = document.getElementById('drawerOverlay');
+            const title = document.getElementById('drawerTitle');
+            
+            title.textContent = themeName;
+            drawer.style.transform = 'translateX(0)';
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            overlay.classList.add('opacity-100');
+        }
+
+        function closeThemeDetail() {
+            const drawer = document.getElementById('themeDrawer');
+            const overlay = document.getElementById('drawerOverlay');
+            
+            drawer.style.transform = 'translateX(100%)';
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            overlay.classList.remove('opacity-100');
+        }
+
+        // Simple animation trigger for progress bars on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const bars = document.querySelectorAll('.chart-bar-transition');
+            bars.forEach(bar => {
+                const targetWidth = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => {
+                    bar.style.width = targetWidth;
+                }, 100);
+            });
+        });
+    </script>
+</body></html>

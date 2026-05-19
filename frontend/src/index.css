@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-page-bg font-sans text-on-surface antialiased;
+  }
+}
+
+@layer components {
+  .card-stitch {
+    @apply rounded-xl border border-border-subtle bg-card-surface p-card-padding shadow-card;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-status-success px-4 py-2 text-label-md font-semibold text-white transition-colors hover:bg-primary-hover;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-status-success bg-white px-4 py-2 text-label-md font-semibold text-status-success transition-colors hover:bg-status-success/5;
+  }
+  .section-label {
+    @apply text-label-md font-medium uppercase tracking-wider text-text-muted;
+  }
+  .nav-active {
+    @apply border-l-4 border-primary bg-surface-container-low font-bold text-primary;
+  }
+  .nav-item {
+    @apply flex items-center gap-3 px-6 py-3 text-label-md text-secondary transition-all hover:bg-surface-bright;
+  }
+  .stepper-line {
+    @apply absolute left-[19px] top-6 z-0 w-0.5 bg-border-subtle;
+  }
+}

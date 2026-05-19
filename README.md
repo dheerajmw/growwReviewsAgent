@@ -25,6 +25,7 @@ Turn App Store and Play Store review exports into a weekly one-page pulse, publi
 | 5 | [pipelines/phase5_docs_mcp](pipelines/phase5_docs_mcp) | **MCP** Docs (HTTP) | **Implemented** |
 | 6 | [pipelines/phase6_gmail_mcp](pipelines/phase6_gmail_mcp) | **MCP** Gmail (HTTP) | **Implemented** |
 | 7 | [pipelines/phase7_e2e](pipelines/phase7_e2e) | E2E + **GitHub Actions** | **Implemented** |
+| 8 | [pipelines/phase8_frontend](pipelines/phase8_frontend) | Dashboard BFF + React UI | **Implemented** |
 
 ---
 
@@ -87,6 +88,15 @@ python scripts/run_weekly_pulse.py -v --publish
 
 **Do not** use Groq for Google Docs or Gmail — those are MCP-only.
 
+### Phase 8 — dashboard
+
+```bash
+./scripts/serve_dashboard.sh
+# or separately: uvicorn on :8080 + `cd frontend && npm run dev`
+```
+
+See [pipelines/phase8_frontend/README.md](pipelines/phase8_frontend/README.md) and [doc/eval/phase-08/eval.md](doc/eval/phase-08/eval.md).
+
 ---
 
 ## MCP setup (Google Workspace) — Phases 0, 5, 6
@@ -138,6 +148,7 @@ Phase 4  check_pii.py (gate)
 Phase 5  MCP → Google Doc
 Phase 6  MCP → Gmail draft
 Phase 7  Full “weekly pulse” runbook in Cursor
+Phase 8  Dashboard (BFF + React) — read artifacts, link to Doc/Draft
 ```
 
 ---
