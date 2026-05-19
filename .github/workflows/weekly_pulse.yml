@@ -1,0 +1,169 @@
+# Phase 7 — weekly data refresh + optional publish
+# See doc/runbook.md and doc/phasewiseImplementationPlan.md
+
+name: Weekly pulse
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  schedule:
+    - cron: "0 6 * * 1" # Monday 06:00 UTC
+  workflow_dispatch:
+    inputs:
+      run_publish:
+        description: "Run publish job (Doc + Gmail draft)"
+        type: boolean
+        default: false
+      skip_download:
+        description: "Skip download_reviews (use committed data/raw)"
+        type: boolean
+        default: false
+      force_publish:
+        description: "Force publish even if same week"
+        type: boolean
+        default: false
+
+concurrency:
+  group: weekly-pulse-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate (no Groq)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Ingest (if raw exports present)
+        run: |
+          if ls data/raw/*.csv 1>/dev/null 2>&1; then
+            python scripts/ingest_reviews.py
+            python scripts/validate_reviews.py
+          else
+            echo "No data/raw/*.csv — skip ingest"
+          fi
+
+      - name: Validate themes (if artifacts present)
+        run: |
+          if [ -f data/themes/clusters.json ]; then
+            python scripts/validate_themes.py
+          fi
+
+      - name: Validate note and PII (if note present)
+        run: |
+          if [ -f data/weekly/note.md ]; then
+            python scripts/validate_note.py
+            python scripts/check_pii.py data/weekly/note.md
+          fi
+
+      - name: Unit tests (phase validators)
+        run: |
+          python -c "
+          from pathlib import Path
+          import tempfile
+          from tests.test_phase4_pii import test_clean_note_snippet_passes, test_pii_samples_fail
+          from tests.test_phase5_publish import test_no_googleapis_in_phase5
+          from tests.test_phase6_gmail import test_no_gmail_api_in_phase6
+          test_clean_note_snippet_passes()
+          test_pii_samples_fail()
+          test_no_googleapis_in_phase5()
+          test_no_gmail_api_in_phase6()
+          print('smoke tests ok')
+          "
+
+  refresh-data:
+    name: Refresh data (Groq)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Download reviews
+        if: github.event.inputs.skip_download != 'true'
+        run: python scripts/download_reviews.py -v
+        continue-on-error: true
+
+      - name: Run data pipeline (ingest → themes → note → PII)
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          ARGS="-v --skip-publish --stop-after pii"
+          if [ "${{ github.event.inputs.skip_download }}" = "true" ]; then
+            ARGS="$ARGS --skip-download"
+          fi
+          python scripts/run_weekly_pulse.py $ARGS
+
+      - name: Upload weekly artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-pulse-${{ github.run_id }}
+          path: |
+            data/reviews/normalized.jsonl
+            data/reviews/phase2_sample.jsonl
+            data/themes/
+            data/weekly/note.md
+            data/weekly/note.json
+          if-no-files-found: error
+
+  publish:
+    name: Publish (MCP Doc + Gmail)
+    runs-on: ubuntu-latest
+    needs: [refresh-data]
+    if: |
+      always() &&
+      needs.refresh-data.result == 'success' &&
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.run_publish == 'true')
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: weekly-pulse-${{ github.run_id }}
+          path: data
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Publish Doc and Gmail draft
+        env:
+          GROWW_PULSE_DOC_ID: ${{ secrets.GROWW_PULSE_DOC_ID }}
+          PULSE_DRAFT_TO: ${{ secrets.PULSE_DRAFT_TO }}
+          MCP_SERVER_URL: ${{ secrets.MCP_SERVER_URL }}
+        run: |
+          ARGS="-v --publish-only"
+          if [ "${{ github.event.inputs.force_publish }}" = "true" ]; then
+            ARGS="$ARGS --force"
+          fi
+          python scripts/run_weekly_pulse.py $ARGS
+
+      - name: Upload publish state
+        uses: actions/upload-artifact@v4
+        with:
+          name: publish-state-${{ github.run_id }}
+          path: data/weekly/publish_state.json

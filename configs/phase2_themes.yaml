@@ -1,0 +1,38 @@
+# Phase 2 — theme clustering (Groq rate-limit safe)
+# See doc/phasewiseImplementationPlan.md#phase-2--theme-clustering-max-5-themes
+
+model: llama-3.3-70b-versatile
+
+paths:
+  normalized: data/reviews/normalized.jsonl
+  sample: data/reviews/phase2_sample.jsonl
+  clusters: data/themes/clusters.json
+  ranked: data/themes/ranked.json
+  prompts: prompts/themes.md
+
+sampling:
+  max_reviews_per_run: 450
+
+groq:
+  batch_size: 30
+  text_max_chars: 200
+  inter_request_delay_sec: 35
+  daily_token_budget: 90000
+  tpm_soft_limit: 10000
+  max_tokens_per_response: 4096
+  temperature: 0.1
+
+themes:
+  - id: onboarding
+    label: Onboarding
+  - id: kyc
+    label: KYC
+  - id: payments
+    label: Payments
+  - id: statements
+    label: Statements
+  - id: withdrawals
+    label: Withdrawals
+
+ranking:
+  low_rating_weight: 1.5   # multiply count contribution for 1-2 star reviews

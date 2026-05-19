@@ -1,0 +1,20 @@
+# Phase 4 — PII sanitization gate
+# See doc/phasewiseImplementationPlan.md#phase-4--pii-sanitization-gate
+
+paths:
+  note_md: data/weekly/note.md
+  note_json: data/weekly/note.json
+  blockers: data/weekly/blockers.json
+  redact_prompt: prompts/pii_redact.md
+
+# Optional: one name per line from raw export author column
+name_blocklist: null
+
+scan:
+  min_numeric_id_length: 10
+
+redact:
+  enabled: false
+  model: llama-3.3-70b-versatile
+  temperature: 0.2
+  max_tokens: 2048

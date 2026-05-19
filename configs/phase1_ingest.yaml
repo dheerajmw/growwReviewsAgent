@@ -1,0 +1,63 @@
+# Phase 1 — review ingest configuration
+# See pipelines/phase1_ingest/README.md
+
+weeks: 12
+min_weeks: 8
+
+# Content normalization — applied after date window filter
+normalization:
+  min_words: 6          # minimum English words in title + body
+  english_only: true    # drop non-English reviews (langdetect)
+  reject_emoji: true      # drop reviews containing emoji / emoticons
+
+paths:
+  raw_dir: data/raw
+  app_store_glob: "app_store*"
+  play_store_glob: "play_store*"
+  output: data/reviews/normalized.jsonl
+
+# review_id is INTERNAL ONLY — never include in published Doc/draft (decision D-013)
+canonical_fields:
+  - rating
+  - title
+  - text
+  - date
+  - store
+  - review_id
+
+column_aliases:
+  app_store:
+    review_id:
+      - "App Store Review ID"
+      - "Review ID"
+      - "id"
+    rating:
+      - "Rating"
+      - "Star Rating"
+    title:
+      - "Title"
+      - "Review Title"
+    text:
+      - "Review"
+      - "Body"
+      - "Review Text"
+    date:
+      - "Date"
+      - "Review Date"
+      - "Created"
+  play_store:
+    review_id:
+      - "Review ID"
+      - "Review Link"
+    rating:
+      - "Star Rating"
+      - "Rating"
+    title:
+      - "Review Title"
+    text:
+      - "Review Text"
+      - "Text"
+    date:
+      - "Review Submit Date and Time"
+      - "Review Last Update Date and Time"
+      - "Review Date"

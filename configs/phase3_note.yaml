@@ -1,0 +1,20 @@
+# Phase 3 — weekly note generation (Groq)
+# See doc/phasewiseImplementationPlan.md#phase-3--weekly-note-generation-250-words
+
+model: llama-3.3-70b-versatile
+max_words: 250
+temperature: 0.3
+max_tokens: 2048
+
+paths:
+  ranked: data/themes/ranked.json
+  clusters: data/themes/clusters.json
+  sample: data/reviews/phase2_sample.jsonl
+  note_md: data/weekly/note.md
+  note_json: data/weekly/note.json
+  system_prompt: prompts/system.md
+  weekly_prompt: prompts/weekly_note.md
+
+quote_selection:
+  candidates_per_theme: 8
+  prefer_low_ratings: true

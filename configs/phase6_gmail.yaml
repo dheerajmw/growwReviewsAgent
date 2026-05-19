@@ -1,0 +1,16 @@
+# Phase 6 — Gmail draft via HTTP MCP server
+# Server: https://github.com/dheerajmw/MCP-server
+
+mcp_server_url: https://mcp-server-p01x.onrender.com
+
+paths:
+  note_md: data/weekly/note.md
+  publish_state: data/weekly/publish_state.json
+  blockers: data/weekly/blockers.json
+
+# Recipient — set PULSE_DRAFT_TO in .env
+draft_to: null
+
+draft:
+  skip_if_same_week: true
+  subject_prefix: "Groww Weekly Review Pulse"

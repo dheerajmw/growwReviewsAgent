@@ -1,0 +1,16 @@
+# Phase 7 — weekly pulse orchestration
+# See doc/phasewiseImplementationPlan.md#phase-7--end-to-end-workflow-github-actions-scheduler-and-hardening
+
+steps:
+  download: true
+  ingest: true
+  validate_reviews: true
+  themes: true
+  note: true
+  validate_note: true
+  pii: true
+  publish_doc: false
+  publish_draft: false
+
+publish:
+  force: false

@@ -1,0 +1,17 @@
+# Phase 5 — publish weekly note via HTTP MCP server (no googleapis in this repo)
+# Server: https://github.com/dheerajmw/MCP-server
+
+mcp_server_url: https://mcp-server-p01x.onrender.com
+
+paths:
+  note_md: data/weekly/note.md
+  publish_state: data/weekly/publish_state.json
+  blockers: data/weekly/blockers.json
+
+# Google Doc ID (from URL .../document/d/DOC_ID/edit). Create the Doc once in Google Docs UI.
+# Override with env GROWW_PULSE_DOC_ID.
+doc_id: null
+
+publish:
+  skip_if_same_week: true
+  title_prefix: "Weekly Review Pulse — Groww"

@@ -1,0 +1,16 @@
+---
+description: Google Docs and Gmail must use MCP HTTP server only
+globs:
+  - "**/*"
+---
+
+# Google workspace — MCP only
+
+For **Google Docs** and **Gmail** in this project:
+
+- Use the deployed MCP server (`scripts/publish_doc.py`, `scripts/publish_draft.py`) or Cursor agent with `prompts/mcp_publish_docs.md` / `prompts/mcp_publish_gmail.md`.
+- **Do not** add `googleapis`, `google-auth`, or hand-rolled OAuth/REST clients for Docs/Gmail in this repository.
+- Run `scripts/check_pii.py` before any publish step.
+- Gmail: create **drafts** only — never auto-send.
+
+MCP server: https://github.com/dheerajmw/MCP-server
