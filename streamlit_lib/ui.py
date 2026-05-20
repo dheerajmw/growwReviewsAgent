@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import streamlit as st
+import streamlit.components.v1 as components
 
 from . import api
 from .config import LOCAL_BFF, default_api_url, env_api_url, is_streamlit_cloud
@@ -18,46 +19,85 @@ html, body, [class*="css"] {
   background-color: #F6F7F9 !important;
 }
 
-/* Hide Streamlit chrome bar — we use .groww-topbar as the only top bar */
-[data-testid="stHeader"] {
-  display: none !important;
+/* Hide Streamlit header chrome but keep sidebar toggle descendants visible */
+header[data-testid="stHeader"] {
+  visibility: hidden !important;
   height: 0 !important;
+  max-height: 0 !important;
   min-height: 0 !important;
   overflow: visible !important;
+  pointer-events: none !important;
+  background: transparent !important;
+  border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
-[data-testid="stToolbar"] {
-  top: 0.5rem !important;
-  right: 0.5rem !important;
-}
-
-/* Sidebar reopen (>>) — fixed above content, below our topbar layer */
+header[data-testid="stHeader"] [data-testid="stSidebarCollapsedControl"],
+header[data-testid="stHeader"] [data-testid="stSidebarCollapseButton"],
 [data-testid="stSidebarCollapsedControl"],
 [data-testid="stSidebarCollapseButton"] {
-  display: flex !important;
   visibility: visible !important;
+  pointer-events: auto !important;
+  display: flex !important;
   opacity: 1 !important;
   position: fixed !important;
-  top: 0.85rem !important;
-  left: 0.85rem !important;
-  z-index: 100001 !important;
+  top: 0.75rem !important;
+  left: 0.75rem !important;
+  z-index: 100002 !important;
 }
 
+header[data-testid="stHeader"] [data-testid="stSidebarCollapsedControl"] button,
+header[data-testid="stHeader"] [data-testid="stSidebarCollapseButton"] button,
 [data-testid="stSidebarCollapsedControl"] button,
 [data-testid="stSidebarCollapseButton"] button {
-  display: inline-flex !important;
   visibility: visible !important;
+  pointer-events: auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   background: #00D09C !important;
   color: #ffffff !important;
   border: none !important;
   border-radius: 10px !important;
-  padding: 0.45rem 0.7rem !important;
-  box-shadow: 0 4px 12px rgba(0, 208, 156, 0.35) !important;
+  padding: 0.5rem 0.75rem !important;
+  min-width: 2.5rem !important;
+  min-height: 2.5rem !important;
+  box-shadow: 0 4px 12px rgba(0, 208, 156, 0.4) !important;
 }
 
 [data-testid="stSidebarCollapsedControl"] button:hover,
 [data-testid="stSidebarCollapseButton"] button:hover {
   background: #00B88A !important;
+}
+
+/* Custom menu button (injected when native toggle is hidden) */
+#groww-sidebar-open-btn {
+  position: fixed !important;
+  top: 0.75rem !important;
+  left: 0.75rem !important;
+  z-index: 100003 !important;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  border-radius: 10px;
+  background: #00D09C;
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 208, 156, 0.4);
+}
+#groww-sidebar-open-btn:hover { background: #00B88A !important; }
+#groww-sidebar-open-btn.groww-visible { display: inline-flex !important; }
+
+[data-testid="stToolbar"] {
+  top: 0.5rem !important;
+  right: 0.5rem !important;
+  z-index: 100004 !important;
 }
 
 /* Main content clears fixed top bar */
@@ -136,7 +176,7 @@ div[data-testid="stMetricValue"] { color: #171a2c !important; font-weight: 600 !
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid #E9E9EB;
   border-radius: 0;
-  padding: 14px 24px 14px 3.75rem;
+  padding: 14px 24px 14px 4.25rem;
   margin: 0 !important;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   min-height: 4rem;
@@ -237,6 +277,63 @@ def inject_styles() -> None:
     st.markdown(f"<style>{_STITCH_CSS}</style>", unsafe_allow_html=True)
 
 
+def inject_sidebar_menu_button() -> None:
+    """Visible ☰ control to reopen Streamlit sidebar after collapse (parent document)."""
+    components.html(
+        """
+        <script>
+        (function () {
+          const doc = window.parent.document;
+          if (!doc || doc.getElementById("groww-sidebar-open-btn")) return;
+
+          const btn = doc.createElement("button");
+          btn.id = "groww-sidebar-open-btn";
+          btn.type = "button";
+          btn.title = "Open menu";
+          btn.setAttribute("aria-label", "Open sidebar");
+          btn.textContent = "\\u2630";
+
+          function streamlitToggle() {
+            return (
+              doc.querySelector('[data-testid="stSidebarCollapsedControl"] button') ||
+              doc.querySelector('[data-testid="stSidebarCollapseButton"] button')
+            );
+          }
+
+          function sidebarExpanded() {
+            const sb = doc.querySelector('[data-testid="stSidebar"]');
+            return sb && sb.getAttribute("aria-expanded") !== "false";
+          }
+
+          function syncVisibility() {
+            const native = streamlitToggle();
+            const collapsed = !sidebarExpanded();
+            if (collapsed) {
+              btn.classList.add("groww-visible");
+              if (native) {
+                const r = native.getBoundingClientRect();
+                if (r.width > 0 && r.height > 0) btn.classList.remove("groww-visible");
+              }
+            } else {
+              btn.classList.remove("groww-visible");
+            }
+          }
+
+          btn.addEventListener("click", function () {
+            const native = streamlitToggle();
+            if (native) native.click();
+          });
+
+          doc.body.appendChild(btn);
+          syncVisibility();
+          setInterval(syncVisibility, 500);
+        })();
+        </script>
+        """,
+        height=0,
+    )
+
+
 def _suggested_bff_url() -> str:
     if url := st.session_state.get("pulse_api_url"):
         return str(url).rstrip("/")
@@ -326,6 +423,7 @@ def render_page_footer() -> None:
 def init_page(*, show_connection: bool = False, connection_expanded: bool = False) -> None:
     """Shared page setup: Stitch styles, sidebar brand, optional API expander."""
     inject_styles()
+    inject_sidebar_menu_button()
     sidebar_brand()
     if show_connection:
         api_connection_sidebar(expanded=connection_expanded)
