@@ -4,13 +4,13 @@ from __future__ import annotations
 
 import os
 
-import requests
 import streamlit as st
 import streamlit.components.v1 as components
 
 from .config import is_placeholder, is_streamlit_cloud
 
 DEFAULT_UI_URL = "https://groww-pulse-ui.onrender.com"
+
 
 _EMBED_CSS = """
 [data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"],
@@ -38,12 +38,22 @@ def _from_secrets(key: str) -> str | None:
     return None
 
 
+def _api_url_configured() -> str | None:
+    """Remote BFF in secrets/env → treat as production (use default React host)."""
+    url = _from_secrets("PULSE_API_URL") or os.environ.get("PULSE_API_URL", "").strip().rstrip("/")
+    if url and not is_placeholder(url) and not url.startswith("http://127.0.0.1"):
+        return url
+    return None
+
+
 def react_ui_url() -> str | None:
-    """Hosted React URL (secrets → env → Streamlit Cloud default)."""
+    """Hosted React URL (secrets → env → production default)."""
     url = _from_secrets("PULSE_UI_URL") or os.environ.get("PULSE_UI_URL", "").strip().rstrip("/")
     if url and not is_placeholder(url):
         return url
-    if is_streamlit_cloud():
+    if force_native_streamlit():
+        return None
+    if is_streamlit_cloud() or _api_url_configured():
         return DEFAULT_UI_URL
     return None
 
@@ -58,42 +68,29 @@ def force_native_streamlit() -> bool:
     return os.environ.get("PULSE_STREAMLIT_NATIVE", "").strip().lower() in ("1", "true", "yes")
 
 
-def react_ui_reachable(url: str) -> bool:
-    try:
-        r = requests.get(url, timeout=10)
-        body = r.text[:2000] if r.text else ""
-        return (
-            r.status_code < 400
-            and ("html" in (r.headers.get("content-type") or "").lower() or "<html" in body.lower())
-            and ("/assets/" in body or "root" in body)
-        )
-    except Exception:
-        return False
-
-
 def use_react_embed() -> bool:
-    """Same UI as localhost:5173 when React host is configured and healthy."""
+    """Embed React whenever we have a UI URL (no server-side health check)."""
     if force_native_streamlit():
         return False
-    url = react_ui_url()
-    if not url:
-        return False
-    return react_ui_reachable(url)
+    return bool(react_ui_url())
 
 
 def render_react_dashboard(*, height: int = 1200) -> None:
     url = react_ui_url()
     if not url:
-        st.error("Set `PULSE_UI_URL` in Streamlit secrets (e.g. https://groww-pulse-ui.onrender.com).")
-        st.stop()
-    if not react_ui_reachable(url):
-        st.warning(f"React UI at `{url}` is not reachable. Deploy **groww-pulse-ui** on Render, then reboot.")
-        st.link_button("Open React UI", url)
+        st.error(
+            "Set Streamlit secret `PULSE_UI_URL` (e.g. https://groww-pulse-ui.onrender.com) "
+            "or deploy groww-pulse-ui on Render."
+        )
         st.stop()
 
     st.markdown(f"<style>{_EMBED_CSS}</style>", unsafe_allow_html=True)
-    components.iframe(
-        f"{url}/",
-        height=height,
-        scrolling=True,
-    )
+    # Always embed — Streamlit Cloud cannot reliably preflight Render free-tier (cold start).
+    components.iframe(f"{url}/", height=height, scrolling=True)
+
+    with st.expander("Dashboard not loading?", expanded=False):
+        st.markdown(
+            f"If the iframe is blank, wait ~30s for Render cold start, then refresh. "
+            f"Or open the React app directly: [{url}]({url}/)"
+        )
+        st.caption("Ensure **groww-pulse-ui** is deployed and Live on Render.")

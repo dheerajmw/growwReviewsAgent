@@ -24,7 +24,7 @@ if _embed_react:
     render_react_dashboard()
     st.stop()
 
-# --- Legacy native Streamlit UI (opt-in) ---
+# --- Legacy native Streamlit UI (PULSE_STREAMLIT_NATIVE=true only) ---
 from streamlit_lib import api
 from streamlit_lib import components as stitch
 from streamlit_lib.ui import (
@@ -34,12 +34,6 @@ from streamlit_lib.ui import (
     render_page_footer,
     render_top_bar,
 )
-
-if not force_native_streamlit():
-    st.info(
-        "React dashboard unavailable. Deploy **groww-pulse-ui** on Render and set "
-        "`PULSE_UI_URL` in secrets, then reboot. Showing simplified Streamlit UI."
-    )
 
 init_page()
 

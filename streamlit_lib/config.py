@@ -30,7 +30,26 @@ def is_placeholder(url: str) -> bool:
 
 
 def is_streamlit_cloud() -> bool:
-    return os.environ.get("STREAMLIT_RUNTIME_ENV") == "cloud"
+    """Detect Streamlit Community Cloud (env markers + request URL)."""
+    if os.environ.get("STREAMLIT_RUNTIME_ENV") == "cloud":
+        return True
+    if os.environ.get("STREAMLIT_SHARING", "").lower() in ("true", "1", "yes"):
+        return True
+    if os.environ.get("STREAMLIT_SHARING_MODE", "").lower() == "cloud":
+        return True
+    host = os.environ.get("HOSTNAME", "") + os.environ.get("STREAMLIT_SERVER_ADDRESS", "")
+    if "streamlit" in host.lower():
+        return True
+    try:
+        import streamlit as st
+
+        ctx = getattr(st, "context", None)
+        page_url = str(getattr(ctx, "url", "") or "")
+        if "streamlit.app" in page_url or "share.streamlit.io" in page_url:
+            return True
+    except Exception:
+        pass
+    return False
 
 
 def env_api_url() -> str | None:
