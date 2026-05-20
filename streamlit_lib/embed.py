@@ -1,72 +1,76 @@
-"""Embed the React (Vite) dashboard inside Streamlit Cloud."""
+"""Optional: embed hosted React app inside Streamlit (off by default on Streamlit Cloud)."""
 
 from __future__ import annotations
 
 import os
 
+import requests
 import streamlit as st
 import streamlit.components.v1 as components
 
 _EMBED_CSS = """
 [data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"],
 [data-testid="stSidebarCollapseButton"], header[data-testid="stHeader"],
-#groww-sidebar-open-btn {
-  display: none !important;
-}
-section.main {
-  padding: 0 !important;
-  overflow: hidden !important;
-}
-section.main .block-container {
-  padding: 0 !important;
-  max-width: 100% !important;
-}
+#groww-sidebar-open-btn { display: none !important; }
+section.main { padding: 0 !important; overflow: hidden !important; }
+section.main .block-container { padding: 0 !important; max-width: 100% !important; }
 .stApp { background: #F6F7F9 !important; }
+.groww-iframe-wrap { width: 100%; height: calc(100vh - 1rem); min-height: 800px; border: none; }
 """
 
 
 def react_ui_url() -> str | None:
-    """Resolve hosted React app URL (Streamlit secret or env)."""
+    """React app URL — only when explicitly configured (not auto-default)."""
     try:
         if "PULSE_UI_URL" in st.secrets:
             raw = str(st.secrets["PULSE_UI_URL"]).strip().rstrip("/")
-            if raw and not raw.startswith("YOUR"):
+            if raw and not raw.upper().startswith("YOUR"):
                 return raw
     except Exception:
         pass
     raw = os.environ.get("PULSE_UI_URL", "").strip().rstrip("/")
-    if raw:
-        return raw
-    # Default after Render static site deploy (see render.yaml groww-pulse-ui)
-    return "https://groww-pulse-ui.onrender.com"
+    return raw or None
 
 
-def render_react_dashboard(*, height: int = 920) -> None:
-    """Full-page iframe to the Pulse 6 React app (same UI as npm run dev)."""
-    url = react_ui_url()
-    if not url:
-        st.error(
-            "React UI URL not configured. Set Streamlit secret `PULSE_UI_URL` "
-            "to your deployed frontend (e.g. Render static site)."
-        )
-        st.stop()
-
-    st.markdown(f"<style>{_EMBED_CSS}</style>", unsafe_allow_html=True)
-    components.iframe(f"{url}/", height=height, scrolling=False)
+def react_ui_reachable(url: str) -> bool:
+    try:
+        r = requests.get(url, timeout=8)
+        return r.status_code < 400 and "html" in (r.headers.get("content-type") or "").lower()
+    except Exception:
+        return False
 
 
 def use_react_embed() -> bool:
-    """True unless native Streamlit UI is explicitly requested."""
-    flag = os.environ.get("PULSE_STREAMLIT_NATIVE", "").strip().lower()
-    if flag in ("1", "true", "yes"):
-        return False
+    """Only when PULSE_USE_REACT_UI=true and PULSE_UI_URL is set and reachable."""
+    enabled = False
     try:
-        if "PULSE_STREAMLIT_NATIVE" in st.secrets:
-            return str(st.secrets["PULSE_STREAMLIT_NATIVE"]).strip().lower() not in (
-                "1",
-                "true",
-                "yes",
-            )
+        if "PULSE_USE_REACT_UI" in st.secrets:
+            enabled = str(st.secrets["PULSE_USE_REACT_UI"]).strip().lower() in ("1", "true", "yes")
     except Exception:
         pass
-    return True
+    if not enabled:
+        enabled = os.environ.get("PULSE_USE_REACT_UI", "").strip().lower() in ("1", "true", "yes")
+    if not enabled:
+        return False
+    url = react_ui_url()
+    return bool(url and react_ui_reachable(url))
+
+
+def render_react_dashboard(*, height: int = 900) -> None:
+    url = react_ui_url()
+    if not url:
+        st.error("Set Streamlit secret `PULSE_UI_URL` to your Render static site (groww-pulse-ui).")
+        st.stop()
+    if not react_ui_reachable(url):
+        st.error(f"Cannot reach React UI at `{url}`. Deploy groww-pulse-ui on Render first.")
+        st.link_button("Open React UI in new tab", url)
+        st.stop()
+
+    st.markdown(f"<style>{_EMBED_CSS}</style>", unsafe_allow_html=True)
+    safe = url.replace('"', "%22")
+    components.html(
+        f'<iframe class="groww-iframe-wrap" src="{safe}/" title="Groww Review Pulse" '
+        f'allow="fullscreen" loading="eager" referrerpolicy="no-referrer-when-downgrade"></iframe>',
+        height=height,
+        scrolling=False,
+    )
