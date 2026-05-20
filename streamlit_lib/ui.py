@@ -18,14 +18,42 @@ html, body, [class*="css"] {
   background-color: #F6F7F9 !important;
 }
 
-/* Streamlit default header overlaps custom top bar — hide it */
+/* Keep Streamlit header — contains sidebar collapse / expand (>>) control */
 [data-testid="stHeader"] {
-  display: none !important;
-  height: 0 !important;
+  display: block !important;
+  visibility: visible !important;
+  height: auto !important;
+  min-height: 3.25rem !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #E9E9EB !important;
 }
 
-header[data-testid="stHeader"] {
-  display: none !important;
+/* Re-open sidebar when collapsed — do not hide this control */
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="stSidebarCollapseButton"] {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 999999 !important;
+  position: relative !important;
+}
+
+[data-testid="stSidebarCollapsedControl"] button,
+[data-testid="stSidebarCollapseButton"] button {
+  display: inline-flex !important;
+  visibility: visible !important;
+  background: #00D09C !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 10px !important;
+  padding: 0.4rem 0.65rem !important;
+  box-shadow: 0 4px 12px rgba(0, 208, 156, 0.35) !important;
+}
+
+[data-testid="stSidebarCollapsedControl"] button:hover,
+[data-testid="stSidebarCollapseButton"] button:hover {
+  background: #00B88A !important;
 }
 
 section.main {
@@ -82,8 +110,8 @@ div[data-testid="stMetricValue"] { color: #171a2c !important; font-weight: 600 !
 /* Stitch components */
 .groww-topbar {
   position: sticky;
-  top: 0;
-  z-index: 999;
+  top: 3.25rem;
+  z-index: 998;
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(12px);

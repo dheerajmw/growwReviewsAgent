@@ -27,7 +27,8 @@ type IconName =
   | "warning"
   | "menu_book"
   | "shop"
-  | "phone_iphone";
+  | "phone_iphone"
+  | "menu";
 
 const paths: Record<IconName, React.ReactNode> = {
   dashboard: (
@@ -117,6 +118,9 @@ const paths: Record<IconName, React.ReactNode> = {
   phone_iphone: (
     <path d="M9 3h6v18H9V3zm3 14h.01" strokeWidth="1.5" stroke="currentColor" fill="none" />
   ),
+  menu: (
+    <path d="M4 7h16M4 12h16M4 17h16" strokeWidth="2" stroke="currentColor" strokeLinecap="round" fill="none" />
+  ),
 };
 
 export function Icon({
@@ -155,6 +159,7 @@ export function Icon({
     "menu_book",
     "shop",
     "phone_iphone",
+    "menu",
   ];
   const isStroke = strokeIcons.includes(name);
   return (
