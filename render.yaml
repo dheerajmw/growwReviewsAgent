@@ -1,0 +1,19 @@
+# Phase 8 BFF — read-only dashboard API (artifacts under data/ on disk)
+# Streamlit UI is hosted separately on Streamlit Cloud.
+services:
+  - type: web
+    name: groww-pulse-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements-bff.txt
+    startCommand: uvicorn pipelines.phase8_frontend.api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: FRONTEND_ORIGIN
+        description: Streamlit app URL(s), comma-separated
+        sync: false
+      - key: PULSE_DATA_ROOT
+        description: Optional override for data/ directory
+        sync: false

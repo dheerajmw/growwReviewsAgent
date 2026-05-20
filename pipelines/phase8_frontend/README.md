@@ -30,6 +30,11 @@ Or use the helper script:
 
 Open http://localhost:5173
 
+## Deploy (Streamlit + Render)
+
+- **BFF on Render:** `render.yaml` + `requirements-bff.txt` — see [doc/deploy-streamlit.md](../../doc/deploy-streamlit.md)
+- **UI on Streamlit Cloud:** `streamlit_app.py` + `requirements-streamlit.txt`, secret `PULSE_API_URL`
+
 ## API routes
 
 | Method | Path | Source |

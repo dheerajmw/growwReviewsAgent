@@ -25,7 +25,7 @@ Turn App Store and Play Store review exports into a weekly one-page pulse, publi
 | 5 | [pipelines/phase5_docs_mcp](pipelines/phase5_docs_mcp) | **MCP** Docs (HTTP) | **Implemented** |
 | 6 | [pipelines/phase6_gmail_mcp](pipelines/phase6_gmail_mcp) | **MCP** Gmail (HTTP) | **Implemented** |
 | 7 | [pipelines/phase7_e2e](pipelines/phase7_e2e) | E2E + **GitHub Actions** | **Implemented** |
-| 8 | [pipelines/phase8_frontend](pipelines/phase8_frontend) | Dashboard BFF + React UI | **Implemented** |
+| 8 | [pipelines/phase8_frontend](pipelines/phase8_frontend) | Dashboard BFF + React / **Streamlit** UI | **Implemented** |
 
 ---
 
@@ -90,9 +90,16 @@ python scripts/run_weekly_pulse.py -v --publish
 
 ### Phase 8 — dashboard
 
+**Production:** [Streamlit Cloud](https://share.streamlit.io) UI → **Render** BFF. See [doc/deploy-streamlit.md](doc/deploy-streamlit.md).
+
 ```bash
+# Streamlit (set PULSE_API_URL to your Render BFF)
+pip install -r requirements-streamlit.txt
+export PULSE_API_URL=https://your-api.onrender.com
+streamlit run streamlit_app.py
+
+# Local React dev (optional)
 ./scripts/serve_dashboard.sh
-# or separately: uvicorn on :8080 + `cd frontend && npm run dev`
 ```
 
 See [pipelines/phase8_frontend/README.md](pipelines/phase8_frontend/README.md) and [doc/eval/phase-08/eval.md](doc/eval/phase-08/eval.md).

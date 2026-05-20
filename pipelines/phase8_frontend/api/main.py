@@ -11,10 +11,18 @@ from .routes import health, pipeline, pulse, themes
 
 app = FastAPI(title="Groww Weekly Review Pulse API", version="1.0.0")
 
-origins = os.environ.get("FRONTEND_ORIGIN", "http://localhost:5173").split(",")
+_default_origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:8501",
+    "http://127.0.0.1:8501",
+]
+_extra = [o.strip() for o in os.environ.get("FRONTEND_ORIGIN", "").split(",") if o.strip()]
+origins = list(dict.fromkeys(_default_origins + _extra))
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins + ["http://127.0.0.1:5173"],
+    allow_origins=origins,
+    allow_origin_regex=r"https://.*\.streamlit\.app",
     allow_credentials=True,
     allow_methods=["GET"],
     allow_headers=["*"],

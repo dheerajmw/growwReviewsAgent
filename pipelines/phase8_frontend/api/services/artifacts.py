@@ -1,21 +1,28 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
+DATA_ROOT = Path(os.environ.get("PULSE_DATA_ROOT", REPO_ROOT))
+
+
+def _data_path(*parts: str) -> Path:
+    return DATA_ROOT.joinpath(*parts)
+
 
 PATHS = {
-    "note_json": REPO_ROOT / "data/weekly/note.json",
-    "note_md": REPO_ROOT / "data/weekly/note.md",
-    "ranked": REPO_ROOT / "data/themes/ranked.json",
-    "clusters": REPO_ROOT / "data/themes/clusters.json",
-    "publish_state": REPO_ROOT / "data/weekly/publish_state.json",
-    "blockers": REPO_ROOT / "data/weekly/blockers.json",
-    "normalized": REPO_ROOT / "data/reviews/normalized.jsonl",
-    "history": REPO_ROOT / "data/weekly/history",
+    "note_json": _data_path("data/weekly/note.json"),
+    "note_md": _data_path("data/weekly/note.md"),
+    "ranked": _data_path("data/themes/ranked.json"),
+    "clusters": _data_path("data/themes/clusters.json"),
+    "publish_state": _data_path("data/weekly/publish_state.json"),
+    "blockers": _data_path("data/weekly/blockers.json"),
+    "normalized": _data_path("data/reviews/normalized.jsonl"),
+    "history": _data_path("data/weekly/history"),
 }
 
 
