@@ -12,9 +12,16 @@
 
 @layer components {
   .app-header {
-    position: sticky;
+    position: fixed;
     top: 0;
-    z-index: 200;
+    left: 0;
+    right: 0;
+    z-index: 300;
+  }
+
+  .app-header-spacer {
+    height: 5rem;
+    flex-shrink: 0;
   }
 
   .glass-nav {

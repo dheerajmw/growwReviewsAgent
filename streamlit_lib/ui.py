@@ -18,25 +18,29 @@ html, body, [class*="css"] {
   background-color: #F6F7F9 !important;
 }
 
-/* Keep Streamlit header — contains sidebar collapse / expand (>>) control */
+/* Hide Streamlit chrome bar — we use .groww-topbar as the only top bar */
 [data-testid="stHeader"] {
-  display: block !important;
-  visibility: visible !important;
-  height: auto !important;
-  min-height: 3.25rem !important;
-  background: rgba(255, 255, 255, 0.92) !important;
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid #E9E9EB !important;
+  display: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  overflow: visible !important;
 }
 
-/* Re-open sidebar when collapsed — do not hide this control */
+[data-testid="stToolbar"] {
+  top: 0.5rem !important;
+  right: 0.5rem !important;
+}
+
+/* Sidebar reopen (>>) — fixed above content, below our topbar layer */
 [data-testid="stSidebarCollapsedControl"],
 [data-testid="stSidebarCollapseButton"] {
   display: flex !important;
   visibility: visible !important;
   opacity: 1 !important;
-  z-index: 999999 !important;
-  position: relative !important;
+  position: fixed !important;
+  top: 0.85rem !important;
+  left: 0.85rem !important;
+  z-index: 100001 !important;
 }
 
 [data-testid="stSidebarCollapsedControl"] button,
@@ -47,7 +51,7 @@ html, body, [class*="css"] {
   color: #ffffff !important;
   border: none !important;
   border-radius: 10px !important;
-  padding: 0.4rem 0.65rem !important;
+  padding: 0.45rem 0.7rem !important;
   box-shadow: 0 4px 12px rgba(0, 208, 156, 0.35) !important;
 }
 
@@ -56,13 +60,22 @@ html, body, [class*="css"] {
   background: #00B88A !important;
 }
 
+/* Main content clears fixed top bar */
 section.main {
   padding-top: 0 !important;
 }
 
-.block-container {
-  padding-top: 0.5rem !important;
+section.main .block-container {
+  padding-top: 5.75rem !important;
   max-width: 1200px !important;
+}
+
+.block-container {
+  max-width: 1200px !important;
+}
+
+[data-testid="stAppViewContainer"] {
+  overflow: visible !important;
 }
 
 [data-testid="stSidebar"] {
@@ -109,17 +122,24 @@ div[data-testid="stMetricValue"] { color: #171a2c !important; font-weight: 600 !
 
 /* Stitch components */
 .groww-topbar {
-  position: sticky;
-  top: 3.25rem;
-  z-index: 998;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  z-index: 100000 !important;
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
-  background: rgba(255, 255, 255, 0.92);
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid #E9E9EB; border-radius: 12px;
-  padding: 16px 24px; margin: 0 0 24px 0;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  min-height: 56px;
+  border-bottom: 1px solid #E9E9EB;
+  border-radius: 0;
+  padding: 14px 24px 14px 3.75rem;
+  margin: 0 !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  min-height: 4rem;
 }
 .groww-topbar-title { font-size: 20px; font-weight: 700; color: #1D1D1F; line-height: 1.3; }
 .groww-topbar-meta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }

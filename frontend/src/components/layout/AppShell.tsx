@@ -54,6 +54,8 @@ export function AppShell() {
         </span>
       </header>
 
+      <div className="app-header-spacer shrink-0" aria-hidden="true" />
+
       <div className="flex min-h-0 flex-1">
         <Sidebar mobileOpen={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
 

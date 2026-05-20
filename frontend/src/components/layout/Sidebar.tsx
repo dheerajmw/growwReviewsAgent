@@ -68,7 +68,7 @@ export function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
         />
       )}
       <aside
-        className={`glass-nav fixed left-0 top-20 z-[160] flex h-[calc(100vh-5rem)] w-[min(280px,85vw)] flex-col overflow-y-auto border-r border-white/20 py-6 transition-transform duration-300 md:hidden ${
+        className={`glass-nav fixed left-0 top-[5rem] z-[160] flex h-[calc(100vh-5rem)] w-[min(280px,85vw)] flex-col overflow-y-auto border-r border-white/20 py-6 transition-transform duration-300 md:hidden ${
           mobileOpen ? "translate-x-0" : "-translate-x-full pointer-events-none"
         }`}
         aria-hidden={!mobileOpen}
