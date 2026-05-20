@@ -1,14 +1,19 @@
-"""Weekly pulse note (paraphrased themes, quotes, actions)."""
+"""Weekly pulse note — Stitch layout (matches React PulsePage)."""
 
 import streamlit as st
 
 from streamlit_lib import api
-from streamlit_lib.ui import ensure_api_connected, inject_styles, pii_badge, sidebar_header
+from streamlit_lib import components as stitch
+from streamlit_lib.ui import (
+    ensure_api_connected,
+    format_week,
+    init_page,
+    pii_badge,
+    render_page_footer,
+    render_top_bar,
+)
 
-inject_styles()
-sidebar_header()
-
-st.title("Weekly Pulse")
+init_page()
 
 if not ensure_api_connected():
     st.stop()
@@ -20,6 +25,9 @@ except Exception as e:
     st.error(str(e))
     st.stop()
 
+publish = pipeline.get("publish_state") or {}
+render_top_bar(format_week(publish.get("week_ending")), pipeline.get("pii_passed", False))
+
 note = pulse.get("note")
 if not note:
     st.warning("No weekly note on the API. Run Phase 3 locally or sync data to Render.")
@@ -27,36 +35,40 @@ if not note:
         st.markdown(pulse["markdown"])
     st.stop()
 
-st.header(note.get("title", "Weekly Review Pulse"))
 wc, mx = pulse.get("word_count", 0), pulse.get("max_words", 250)
-ok = wc <= mx
-st.caption(f"{'✓' if ok else '⚠'} {wc} / {mx} words")
-pii_badge(pipeline.get("pii_passed", False))
+col_title, col_meta = st.columns([3, 1])
+with col_title:
+    st.markdown(f"## {note.get('title', 'Weekly Review Pulse')}")
+with col_meta:
+    st.caption(f"{'✓' if wc <= mx else '⚠'} {wc} / {mx} words")
+    pii_badge(pipeline.get("pii_passed", False))
 
-col_main, col_side = st.columns([2, 1])
+main, side = st.columns([2.2, 1])
 
-with col_main:
-    st.subheader("Top themes")
+with main:
+    parts = [stitch.card_open()]
+    parts.append(stitch.section_label("Top themes"))
     for i, t in enumerate(note.get("themes", []), 1):
-        st.markdown(f"**{i}.** {t.get('headline', t.get('id', ''))}")
-
-    st.subheader("What users are saying")
+        parts.append(stitch.numbered_theme(t.get("headline", t.get("id", "")), i))
+    parts.append(stitch.section_label("What users are saying"))
     for q in note.get("quotes", []):
-        st.markdown(f"> {q.get('paraphrased', '')}")
-
-    st.subheader("Suggested actions")
+        parts.append(stitch.quote_block(q.get("paraphrased", "")))
+    parts.append(stitch.section_label("Suggested actions"))
     for i, a in enumerate(note.get("actions", []), 1):
-        st.markdown(f"{i}. {a.get('text', '')}")
-
+        parts.append(stitch.numbered_theme(a.get("text", ""), i))
+    parts.append(stitch.card_close())
+    st.markdown("\n".join(parts), unsafe_allow_html=True)
     if pulse.get("markdown"):
         with st.expander("Full markdown"):
             st.markdown(pulse["markdown"])
 
-with col_side:
-    publish = pipeline.get("publish_state") or {}
-    st.subheader("Quick links")
-    if publish.get("doc_url"):
-        st.link_button("Google Doc", publish["doc_url"], use_container_width=True)
-    if publish.get("draft_id"):
-        url = publish.get("draft_url") or "https://mail.google.com/mail/u/0/#drafts"
-        st.link_button("Gmail Drafts", url, use_container_width=True)
+with side:
+    st.markdown("### Quick links")
+    st.markdown(stitch.doc_link_card(publish.get("doc_url")), unsafe_allow_html=True)
+    draft_url = publish.get("draft_url") or "https://mail.google.com/mail/u/0/#drafts"
+    st.markdown(
+        stitch.draft_link_card(draft_url, bool(publish.get("draft_id"))),
+        unsafe_allow_html=True,
+    )
+
+render_page_footer()

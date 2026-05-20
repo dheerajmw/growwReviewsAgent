@@ -1,7 +1,7 @@
 """
-Groww Weekly Review Pulse — Streamlit dashboard.
+Groww Weekly Review Pulse — Streamlit dashboard (Stitch design system).
 
-Calls the Phase 8 BFF on Render (or local). Set PULSE_API_URL in .env or Streamlit secrets.
+Calls the Phase 8 BFF on Render. Set PULSE_API_URL in Streamlit secrets.
 """
 
 from __future__ import annotations
@@ -9,13 +9,13 @@ from __future__ import annotations
 import streamlit as st
 
 from streamlit_lib import api
+from streamlit_lib import components as stitch
 from streamlit_lib.ui import (
-    api_connection_sidebar,
     ensure_api_connected,
     format_week,
-    inject_styles,
-    pii_badge,
-    sidebar_header,
+    init_page,
+    render_page_footer,
+    render_top_bar,
 )
 
 st.set_page_config(
@@ -25,9 +25,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-inject_styles()
-api_connection_sidebar(expanded=not api.test_connection()[0])
-sidebar_header()
+init_page()
 
 if not ensure_api_connected():
     st.stop()
@@ -40,24 +38,42 @@ except Exception as e:
 
 publish = pipeline.get("publish_state") or {}
 week = format_week(publish.get("week_ending"))
-st.caption(f"Week ending **{week}**")
-pii_badge(pipeline.get("pii_passed", False))
+pii_ok = pipeline.get("pii_passed", False)
 
-st.title("This week's pulse")
-st.markdown("Executive summary from mobile app reviews")
+render_top_bar(week, pii_ok)
 
-col1, col2, col3 = st.columns(3)
-with col1:
-    st.metric("Reviews analyzed", pipeline.get("normalized_count") or pipeline.get("sample_count") or "—")
-with col2:
-    try:
-        pulse = api.pulse_latest()
-        wc, mx = pulse.get("word_count", 0), pulse.get("max_words", 250)
-        st.metric("Word count", f"{wc} / {mx}")
-    except Exception:
-        st.metric("Word count", "—")
-with col3:
-    st.metric("PII gate", "Passed" if pipeline.get("pii_passed") else "Blocked")
+hero_l, hero_r = st.columns([3, 1])
+with hero_l:
+    st.markdown("## This week's pulse")
+    st.caption("Executive summary from mobile app reviews")
+with hero_r:
+    st.page_link("pages/1_Weekly_Pulse.py", label="Read full pulse →", icon="📈")
+
+try:
+    pulse = api.pulse_latest()
+    wc, mx = pulse.get("word_count", 0), pulse.get("max_words", 250)
+except Exception:
+    wc, mx = 0, 250
+
+m1, m2, m3 = st.columns(3)
+with m1:
+    st.markdown(
+        stitch.metric_card(
+            "Reviews analyzed",
+            str(pipeline.get("normalized_count") or pipeline.get("sample_count") or "—"),
+        ),
+        unsafe_allow_html=True,
+    )
+with m2:
+    st.markdown(
+        stitch.metric_card("Word count", str(wc), f"/ {mx} max", value_class="ok" if wc <= mx else ""),
+        unsafe_allow_html=True,
+    )
+with m3:
+    st.markdown(
+        f'{stitch.card_open()}<p class="groww-metric-label">PII gate</p>{stitch.pii_chip(pii_ok)}{stitch.card_close()}',
+        unsafe_allow_html=True,
+    )
 
 try:
     themes = api.themes_ranked()
@@ -65,32 +81,23 @@ try:
 except Exception:
     ranked = []
 
-left, right = st.columns([1.2, 1])
+left, right = st.columns([1.15, 1])
 with left:
-    st.subheader("Top 3 themes")
     if ranked:
-        import pandas as pd
-
-        df = pd.DataFrame(
-            [{"Theme": t["label"], "Share %": t["pct_of_sample"]} for t in ranked]
-        )
-        for _, row in df.iterrows():
-            st.write(f"**{row['Theme']}** — {row['Share %']}%")
-            st.progress(min(float(row["Share %"]) / 100.0, 1.0))
+        st.markdown(stitch.theme_progress_bars(ranked), unsafe_allow_html=True)
     else:
         st.info("No theme data from API.")
 
 with right:
-    st.subheader("Publish")
-    if publish.get("doc_url"):
-        st.link_button("Open Google Doc", publish["doc_url"], use_container_width=True)
-    else:
-        st.caption("Google Doc not published yet.")
     draft_url = publish.get("draft_url") or "https://mail.google.com/mail/u/0/#drafts"
-    if publish.get("draft_id"):
-        st.link_button("Open Gmail Drafts", draft_url, use_container_width=True)
-    else:
-        st.caption("Gmail draft not created yet.")
+    st.markdown(stitch.doc_link_card(publish.get("doc_url")), unsafe_allow_html=True)
+    st.markdown(
+        stitch.draft_link_card(draft_url, bool(publish.get("draft_id"))),
+        unsafe_allow_html=True,
+    )
 
-st.divider()
-st.caption(f"Data via BFF at `{api.api_base()}`")
+st.markdown(
+    stitch.pipeline_footer_strip(publish.get("published_at")),
+    unsafe_allow_html=True,
+)
+render_page_footer()

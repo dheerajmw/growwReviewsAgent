@@ -15,7 +15,7 @@ The React/Vite app in `frontend/` remains optional for local dev.
 1. Connect [growwReviewsAgent](https://github.com/dheerajmw/growwReviewsAgent) to Render.
 2. Use the blueprint `render.yaml` or create a **Web Service**:
    - **Build:** `pip install -r requirements-bff.txt`
-   - **Start:** `uvicorn pipelines.phase8_frontend.api.main:app --host 0.0.0.0 --port $PORT`
+   - **Start:** `python -m uvicorn pipelines.phase8_frontend.api.main:app --host 0.0.0.0 --port $PORT`
    - **Health check:** `/api/v1/health`
 3. Prepare data (see [deploy/README.md](../deploy/README.md)):
    ```bash
