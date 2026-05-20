@@ -1,25 +1,6 @@
-# Sidebar labels aligned with Stitch / React app shell
+# React UI is embedded from streamlit_app.py (Pulse 6). Legacy pages are prefixed with _ (hidden).
+
 [[pages]]
 path = "streamlit_app.py"
 name = "Dashboard"
 icon = "📊"
-
-[[pages]]
-path = "pages/1_Weekly_Pulse.py"
-name = "Weekly Pulse"
-icon = "📈"
-
-[[pages]]
-path = "pages/2_Themes.py"
-name = "Themes"
-icon = "🏷️"
-
-[[pages]]
-path = "pages/3_Pipeline.py"
-name = "Pipeline"
-icon = "⚙️"
-
-[[pages]]
-path = "pages/4_Settings.py"
-name = "Settings"
-icon = "🔧"

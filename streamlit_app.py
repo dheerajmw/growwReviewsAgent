@@ -1,28 +1,38 @@
 """
-Groww Weekly Review Pulse — Streamlit dashboard (Stitch design system).
+Groww Weekly Review Pulse — Streamlit entrypoint.
 
-Calls the Phase 8 BFF on Render. Set PULSE_API_URL in Streamlit secrets.
+By default loads the React dashboard (Pulse 6 UI) via iframe — same as `npm run dev`.
+Set PULSE_UI_URL in Streamlit secrets to your hosted frontend (Render groww-pulse-ui).
+
+Set PULSE_STREAMLIT_NATIVE=true to use the legacy Python Streamlit pages instead.
 """
 
 from __future__ import annotations
 
 import streamlit as st
 
-from streamlit_lib import api
-from streamlit_lib import components as stitch
-from streamlit_lib.ui import (
-    ensure_api_connected,
-    format_week,
-    init_page,
-    render_page_footer,
-    render_top_bar,
-)
+from streamlit_lib.embed import render_react_dashboard, use_react_embed
 
 st.set_page_config(
     page_title="Groww — Weekly Review Pulse",
     page_icon="📊",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",
+)
+
+if use_react_embed():
+    render_react_dashboard()
+    st.stop()
+
+# Legacy native Streamlit dashboard (pages/_*.py hidden from nav)
+from streamlit_lib import api  # noqa: E402
+from streamlit_lib import components as stitch  # noqa: E402
+from streamlit_lib.ui import (  # noqa: E402
+    ensure_api_connected,
+    format_week,
+    init_page,
+    render_page_footer,
+    render_top_bar,
 )
 
 init_page()
@@ -47,7 +57,7 @@ with hero_l:
     st.markdown("## This week's pulse")
     st.caption("Executive summary from mobile app reviews")
 with hero_r:
-    st.page_link("pages/1_Weekly_Pulse.py", label="Read full pulse →", icon="📈")
+    st.page_link("pages/_1_Weekly_Pulse.py", label="Read full pulse →", icon="📈")
 
 try:
     pulse = api.pulse_latest()

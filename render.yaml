@@ -1,6 +1,4 @@
-# Render Blueprint — Phase 8 BFF (Streamlit UI is on Streamlit Cloud)
-# Dashboard: New → Blueprint → repo dheerajmw/growwReviewsAgent, branch main
-# Root Directory: leave blank (render.yaml must be at repo root)
+# Render Blueprint — BFF API + React UI (Streamlit Cloud embeds the UI)
 services:
   - type: web
     name: groww-pulse-api
@@ -14,3 +12,12 @@ services:
         value: "3.11.9"
       - key: PULSE_DATA_ROOT
         value: /opt/render/project/src/deploy
+
+  - type: web
+    name: groww-pulse-ui
+    runtime: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://groww-pulse-api.onrender.com

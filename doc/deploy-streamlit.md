@@ -1,86 +1,96 @@
-# Deploy — Streamlit UI + Render BFF
+# Deploy — React UI + Render BFF + Streamlit shell
 
 | Component | Host | Role |
 |-----------|------|------|
-| **BFF** (FastAPI) | [Render](https://render.com) | Serves `data/` artifacts via `/api/v1/*` |
-| **UI** | [Streamlit Cloud](https://share.streamlit.io) | Dashboard; calls BFF over HTTPS |
-| **MCP** (Docs/Gmail) | Render (separate repo) | Unchanged — `MCP_SERVER_URL` |
-
-The React/Vite app in `frontend/` remains optional for local dev.
+| **BFF** (FastAPI) | [Render](https://render.com) `groww-pulse-api` | `/api/v1/*` data API |
+| **UI** (React Pulse 6) | Render `groww-pulse-ui` **or** local `npm run dev` | Same UI as localhost |
+| **Streamlit Cloud** | [share.streamlit.io](https://share.streamlit.io) | Embeds React UI in iframe (not the old Python widgets) |
 
 ---
 
-## 1. Deploy BFF on Render
+## Why Streamlit looked different from localhost
 
-1. Connect [growwReviewsAgent](https://github.com/dheerajmw/growwReviewsAgent) to Render.
-2. Use the blueprint `render.yaml` or create a **Web Service**:
-   - **Build:** `pip install -r requirements-bff.txt`
-   - **Start:** `python -m uvicorn pipelines.phase8_frontend.api.main:app --host 0.0.0.0 --port $PORT`
-   - **Health check:** `/api/v1/health`
-3. Prepare data (see [deploy/README.md](../deploy/README.md)):
+- **localhost:5173** = React app (`frontend/`) — Pulse 6 design  
+- **Streamlit Cloud** (before) = Python `streamlit_app.py` only — different UI  
+
+**Now:** Streamlit loads the **same React app** via `PULSE_UI_URL`.
+
+---
+
+## 1. Deploy on Render (blueprint)
+
+`render.yaml` creates two services:
+
+| Service | URL example |
+|---------|-------------|
+| `groww-pulse-api` | `https://groww-pulse-api.onrender.com` |
+| `groww-pulse-ui` | `https://groww-pulse-ui.onrender.com` |
+
+1. Render → **New Blueprint** → repo `growwReviewsAgent`, branch `main` → **Apply**
+2. Wait for both services **Live**
+3. Verify:
    ```bash
-   ./scripts/prepare_render_data.sh
+   curl https://groww-pulse-api.onrender.com/api/v1/health
+   curl -I https://groww-pulse-ui.onrender.com
    ```
-   Set env `PULSE_DATA_ROOT` to your bundle path if not using repo-root `data/`.
-4. Environment variables on Render:
-
-   | Variable | Example |
-   |----------|---------|
-   | `FRONTEND_ORIGIN` | `https://your-app.streamlit.app` |
-   | `PULSE_DATA_ROOT` | `/opt/render/project/src/deploy` (optional) |
-
-5. Note the service URL, e.g. `https://groww-pulse-api.onrender.com`.
-
-CORS allows `https://*.streamlit.app` automatically.
 
 ---
 
-## 2. Deploy UI on Streamlit Cloud
+## 2. Streamlit Cloud secrets
 
-1. Go to [share.streamlit.io](https://share.streamlit.io) → **New app**.
-2. Repository: `dheerajmw/growwReviewsAgent`, branch `main`.
-3. **Main file path:** `streamlit_app.py`
-4. **Requirements file:** `requirements-streamlit.txt`
-5. **Secrets** (TOML):
+**Settings → Secrets:**
 
-   ```toml
-   PULSE_API_URL = "https://groww-pulse-api.onrender.com"
-   ```
+```toml
+PULSE_API_URL = "https://groww-pulse-api.onrender.com"
+PULSE_UI_URL = "https://groww-pulse-ui.onrender.com"
+```
 
-6. Deploy. Pages live under `pages/` (Weekly Pulse, Themes, Pipeline, Settings).
+Use your exact Render URLs. **Reboot** the app after saving.
+
+You should see the React dashboard (Review Pulse header, glass nav, gradient bars) — same as local `npm run dev`.
 
 ---
 
-## 3. Local Streamlit (against local or Render API)
+## 3. Local development
+
+**React UI (recommended):**
 
 ```bash
-pip install -r requirements-streamlit.txt
-export PULSE_API_URL=http://127.0.0.1:8080   # or your Render URL
+./scripts/serve_dashboard.sh
+# or: cd frontend && npm run dev  →  http://localhost:5173
+```
+
+**Streamlit embed (like production):**
+
+```bash
+export PULSE_UI_URL=http://localhost:5173
+cd frontend && npm run dev &
 streamlit run streamlit_app.py
 ```
 
-Open http://localhost:8501
+**Legacy Python Streamlit only:**
+
+```bash
+export PULSE_STREAMLIT_NATIVE=true
+streamlit run streamlit_app.py
+```
 
 ---
 
-## 4. Verify
+## 4. Build React for production manually
 
 ```bash
-curl https://YOUR-RENDER-SERVICE.onrender.com/api/v1/health
-# {"status":"ok"}
-
-curl https://YOUR-RENDER-SERVICE.onrender.com/api/v1/pulse/latest
+./scripts/build_react_deploy.sh
+# Deploy frontend/dist via Render static site groww-pulse-ui
 ```
-
-In Streamlit → **Settings** → **Save & test** should show `Connected: {'status': 'ok'}`.
 
 ---
 
 ## Architecture
 
 ```text
-Streamlit Cloud  --HTTPS GET-->  Render (groww-pulse-api)
-                                      |
-                                      reads data/weekly, data/themes
-GitHub Actions (weekly)  -->  generates data/  -->  sync to Render disk or deploy/
+Browser (Streamlit Cloud)
+    └── iframe → groww-pulse-ui (React static)
+            └── HTTPS → groww-pulse-api (FastAPI)
+                    └── deploy/data artifacts
 ```
