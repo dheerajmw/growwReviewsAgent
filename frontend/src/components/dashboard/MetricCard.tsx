@@ -8,6 +8,7 @@ export function MetricCard({
   trend,
   chip,
   children,
+  valueClassName = "",
 }: {
   label: string;
   value?: ReactNode;
@@ -15,19 +16,22 @@ export function MetricCard({
   trend?: string;
   chip?: ReactNode;
   children?: ReactNode;
+  valueClassName?: string;
 }) {
   return (
-    <div className="card-stitch transition-transform hover:-translate-y-0.5">
-      <p className="mb-2 text-body-md text-text-muted">{label}</p>
+    <div className="card-stitch">
+      <p className="mb-4 text-label-md font-bold uppercase tracking-wider text-text-muted">
+        {label}
+      </p>
       {children ?? (
-        <div className="flex items-baseline gap-3">
+        <div className="flex flex-wrap items-baseline gap-4">
           {value != null && value !== "" && (
-            <span className="text-headline-xl text-on-surface">{value}</span>
+            <span className={`metric-value ${valueClassName}`}>{value}</span>
           )}
-          {suffix && <span className="text-body-lg text-text-muted">{suffix}</span>}
+          {suffix && <span className="text-headline-md font-bold text-text-muted/40">{suffix}</span>}
           {trend && (
-            <span className="flex items-center gap-1 rounded-full bg-status-success/10 px-2 py-0.5 text-label-md font-medium text-status-success">
-              <Icon name="trending_up" className="h-4 w-4" />
+            <span className="inline-flex items-center rounded-full border border-status-success/10 bg-status-success/15 px-3 py-1 text-label-md font-bold text-status-success">
+              <Icon name="trending_up" className="mr-1 h-[18px] w-[18px]" />
               {trend}
             </span>
           )}

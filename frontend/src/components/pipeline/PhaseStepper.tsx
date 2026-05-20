@@ -26,10 +26,10 @@ export function PhaseStepper({
             <div
               className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${
                 p.complete && !isScheduler
-                  ? "bg-status-success text-white"
+                  ? "bg-status-success text-white shadow-success-glow"
                   : isScheduler
-                    ? "bg-surface-container-low text-primary"
-                    : "bg-gray-100 text-text-muted"
+                    ? "bg-primary/10 text-primary"
+                    : "bg-on-surface/5 text-text-muted"
               }`}
             >
               <Icon name={p.complete || isScheduler ? icon : "schedule"} className="h-5 w-5" />

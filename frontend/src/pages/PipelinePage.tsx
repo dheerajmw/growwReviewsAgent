@@ -19,7 +19,7 @@ export function PipelinePage() {
   return (
     <>
       <header className="mb-8">
-        <h1 className="text-headline-xl text-on-surface">Pipeline status</h1>
+        <h1 className="text-headline-xl font-extrabold tracking-tight text-on-surface">Pipeline status</h1>
         <p className="mt-1 text-body-md text-text-muted">
           Phases 1–7 · automated refresh via GitHub Actions
         </p>
@@ -59,7 +59,7 @@ export function PipelinePage() {
             <div className="space-y-3">
               <button
                 type="button"
-                className="flex w-full items-center justify-center gap-2 rounded-lg border border-primary py-2.5 text-body-md font-bold text-primary hover:bg-primary/5"
+                className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-primary py-3 text-body-md font-bold text-primary transition-all hover:bg-primary hover:text-white"
                 onClick={() => window.location.reload()}
               >
                 <Icon name="refresh" className="h-4 w-4" />

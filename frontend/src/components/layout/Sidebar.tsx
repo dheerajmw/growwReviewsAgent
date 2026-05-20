@@ -11,27 +11,25 @@ const links = [
 
 export function Sidebar() {
   return (
-    <aside className="fixed left-0 top-16 z-40 hidden h-[calc(100vh-64px)] w-sidebar-width flex-col border-r border-border-subtle bg-surface-container-lowest py-4 md:flex">
-      <div className="mb-8 px-6">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-status-success font-bold text-white">
+    <aside className="glass-nav fixed left-0 top-20 z-40 hidden h-[calc(100vh-80px)] w-sidebar-width flex-col border-r border-white/20 py-8 md:flex">
+      <div className="mb-10 px-8">
+        <div className="flex items-center gap-4">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-status-success text-xl font-black text-white shadow-logo-glow">
             G
           </div>
           <div>
-            <p className="text-body-lg font-semibold text-on-surface">App Reviews</p>
-            <p className="text-label-md text-text-muted">Weekly Review Pulse</p>
+            <p className="text-body-lg font-bold text-on-surface">App Reviews</p>
+            <p className="text-caption text-text-muted">Groww Platform</p>
           </div>
         </div>
       </div>
-      <nav className="flex-1">
+      <nav className="flex-1 space-y-1 px-4">
         {links.map((l) => (
           <NavLink
             key={l.to}
             to={l.to}
             end={l.end}
-            className={({ isActive }) =>
-              isActive ? "nav-active translate-x-px" : "nav-item"
-            }
+            className={({ isActive }) => (isActive ? "nav-active" : "nav-item")}
           >
             <Icon name={l.icon} className="h-5 w-5" />
             <span>{l.label}</span>

@@ -46,7 +46,7 @@ export function SettingsPage() {
   return (
     <div className="mx-auto max-w-[800px] space-y-6">
       <header className="mb-8">
-        <h1 className="text-headline-xl text-on-background">Settings</h1>
+        <h1 className="text-headline-xl font-extrabold tracking-tight text-on-surface">Settings</h1>
         <p className="text-body-md text-text-muted">
           Manage your dashboard preferences and data pipeline configuration.
         </p>

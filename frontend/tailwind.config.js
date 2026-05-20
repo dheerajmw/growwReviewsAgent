@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+/** Tokens from doc/stitch pulse 6/DESIGN.md */
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
@@ -12,6 +13,7 @@ export default {
         primary: "#006c4f",
         "primary-container": "#00d09c",
         "primary-hover": "#00B88A",
+        "primary-fixed": "#2fe0aa",
         secondary: "#5f5e60",
         "status-success": "#00D09C",
         "status-warning": "#F5A623",
@@ -23,6 +25,8 @@ export default {
         "on-primary-container": "#00533c",
         "error-container": "#ffdad6",
         "on-error-container": "#93000a",
+        "secondary-fixed-dim": "#c8c6c8",
+        background: "#fbf8ff",
         groww: {
           primary: "#00D09C",
           "primary-hover": "#00B88A",
@@ -34,17 +38,17 @@ export default {
         },
       },
       spacing: {
-        gutter: "24px",
-        "sidebar-width": "240px",
-        "card-padding": "24px",
+        gutter: "32px",
+        "sidebar-width": "260px",
+        "card-padding": "28px",
         "max-content": "1200px",
       },
       fontSize: {
-        "headline-xl": ["28px", { lineHeight: "36px", letterSpacing: "-0.02em", fontWeight: "600" }],
-        "headline-md": ["20px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }],
+        "headline-xl": ["32px", { lineHeight: "40px", letterSpacing: "-0.03em", fontWeight: "800" }],
+        "headline-md": ["22px", { lineHeight: "30px", letterSpacing: "-0.02em", fontWeight: "700" }],
         "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
         "body-md": ["14px", { lineHeight: "21px", fontWeight: "400" }],
-        "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.01em", fontWeight: "500" }],
+        "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "600" }],
         caption: ["12px", { lineHeight: "16px", fontWeight: "400" }],
       },
       fontFamily: {
@@ -53,9 +57,17 @@ export default {
       boxShadow: {
         card: "0 1px 3px rgba(0,0,0,0.06)",
         elevated: "0 4px 12px rgba(0,0,0,0.1)",
+        stitch: "0 20px 25px -5px rgba(23, 26, 44, 0.05), 0 8px 10px -6px rgba(23, 26, 44, 0.05)",
+        "success-glow": "0 0 12px rgba(0, 208, 156, 0.4)",
+        "logo-glow": "0 10px 15px -3px rgba(0, 208, 156, 0.3)",
       },
       maxWidth: {
         content: "1200px",
+      },
+      backgroundImage: {
+        "groww-gradient": "linear-gradient(to right, #00D09C, #2fe0aa)",
+        "page-mesh":
+          "radial-gradient(at 0% 0%, rgba(0, 208, 156, 0.05) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(83, 103, 255, 0.05) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(0, 208, 156, 0.05) 0px, transparent 50%), radial-gradient(at 0% 100%, rgba(83, 103, 255, 0.05) 0px, transparent 50%)",
       },
     },
   },

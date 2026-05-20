@@ -27,8 +27,8 @@ export function ThemesPage() {
 
   return (
     <>
-      <section className="mb-6 flex flex-col gap-1">
-        <h1 className="text-headline-xl text-on-surface">Review themes</h1>
+      <section className="mb-8 flex flex-col gap-1">
+        <h1 className="text-headline-xl font-extrabold tracking-tight text-on-surface">Review themes</h1>
         <p className="text-body-md text-text-muted">
           Up to 5 themes from sampled App Store &amp; Play reviews
         </p>
@@ -46,7 +46,7 @@ export function ThemesPage() {
           <div className="card-stitch flex flex-1 flex-col justify-center">
             <h3 className="mb-2 text-body-md text-text-muted">Sample size</h3>
             <div className="flex items-baseline gap-2">
-              <span className="text-headline-xl text-primary">{sample ?? "—"}</span>
+              <span className="metric-value text-status-success">{sample ?? "—"}</span>
               <span className="text-body-md text-text-muted">reviews</span>
             </div>
           </div>
@@ -76,9 +76,9 @@ export function ThemesPage() {
         </div>
       </section>
 
-      <section className="overflow-hidden rounded-xl border border-border-subtle bg-card-surface shadow-card">
+      <section className="card-stitch overflow-hidden p-0">
         <div className="flex items-center justify-between border-b border-border-subtle px-card-padding py-4">
-          <h3 className="text-headline-md">Ranked themes</h3>
+          <h3 className="text-headline-md font-black">Ranked themes</h3>
         </div>
         <ThemeRankList themes={data.ranked} onSelect={setSelected} />
       </section>
