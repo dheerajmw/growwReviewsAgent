@@ -33,7 +33,7 @@ Turn App Store and Play Store review exports into a weekly one-page pulse, publi
 
 ```bash
 cd /Users/dheerajj/Desktop/Milestone3
-python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+python3 -m venv .venv && .venv/bin/pip install -r requirements-pipeline.txt
 
 .venv/bin/python scripts/download_reviews.py --weeks 12
 .venv/bin/python scripts/ingest_reviews.py -v
@@ -94,7 +94,7 @@ python scripts/run_weekly_pulse.py -v --publish
 
 ```bash
 # Streamlit (set PULSE_API_URL to your Render BFF)
-pip install -r requirements-streamlit.txt
+pip install -r requirements.txt
 export PULSE_API_URL=https://your-api.onrender.com
 streamlit run streamlit_app.py
 

@@ -21,6 +21,8 @@ PULSE_UI_URL = "https://groww-pulse-ui.onrender.com"
 
 `PULSE_UI_URL` is optional on Streamlit Cloud (defaults to `groww-pulse-ui`). **Reboot** after changes.
 
+**Dependencies:** Streamlit Cloud installs root `requirements.txt` only (streamlit, requests, pandas). Pipeline packages live in `requirements-pipeline.txt`.
+
 Prerequisites:
 
 1. Render blueprint applied — both `groww-pulse-api` and `groww-pulse-ui` **Live**

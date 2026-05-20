@@ -43,7 +43,7 @@ jobs:
           cache: pip
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r requirements-pipeline.txt
 
       - name: Ingest (if raw exports present)
         run: |
@@ -96,7 +96,7 @@ jobs:
           cache: pip
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r requirements-pipeline.txt
 
       - name: Download reviews
         if: github.event.inputs.skip_download != 'true'
@@ -148,7 +148,7 @@ jobs:
           cache: pip
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r requirements-pipeline.txt
 
       - name: Publish Doc and Gmail draft
         env:
