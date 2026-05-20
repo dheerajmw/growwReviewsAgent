@@ -22,8 +22,8 @@ export function AppShell() {
   const piiOk = pipeline?.pii_passed ?? false;
 
   return (
-    <div className="min-h-screen">
-      <header className="glass-nav fixed left-0 top-0 z-50 flex h-20 w-full items-center justify-between px-gutter">
+    <div className="flex min-h-screen flex-col">
+      <header className="app-header glass-nav flex h-20 w-full shrink-0 items-center justify-between px-gutter">
         <span className="text-headline-md font-extrabold tracking-tight text-on-surface">
           Review Pulse
         </span>
@@ -43,13 +43,23 @@ export function AppShell() {
         </span>
       </header>
 
-      <Sidebar />
+      <div className="flex min-h-0 flex-1">
+        <Sidebar />
 
-      <main className="ml-0 min-h-screen pb-24 pt-32 md:ml-sidebar-width md:pb-16">
-        <div className="mx-auto max-w-content px-4 md:px-gutter">
-          <Outlet />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <main className="flex-1 overflow-y-auto pb-24 md:pb-8">
+            <div className="mx-auto max-w-content px-4 py-6 md:px-gutter">
+              <Outlet />
+            </div>
+          </main>
+
+          <footer className="hidden shrink-0 py-8 text-center md:ml-0 md:block">
+            <p className="text-caption font-medium uppercase tracking-widest text-text-muted">
+              Data sourced from public App Store &amp; Play exports · Built with Weekly Pipeline
+            </p>
+          </footer>
         </div>
-      </main>
+      </div>
 
       <nav className="glass-nav fixed bottom-0 left-0 right-0 z-40 md:hidden">
         <div className="flex justify-around py-2 text-xs">
@@ -67,12 +77,6 @@ export function AppShell() {
           ))}
         </div>
       </nav>
-
-      <footer className="ml-0 py-12 text-center md:ml-sidebar-width">
-        <p className="text-caption font-medium uppercase tracking-widest text-text-muted">
-          Data sourced from public App Store &amp; Play exports · Built with Weekly Pipeline
-        </p>
-      </footer>
     </div>
   );
 }

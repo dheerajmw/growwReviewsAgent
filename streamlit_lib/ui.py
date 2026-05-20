@@ -18,8 +18,22 @@ html, body, [class*="css"] {
   background-color: #F6F7F9 !important;
 }
 
+/* Streamlit default header overlaps custom top bar — hide it */
+[data-testid="stHeader"] {
+  display: none !important;
+  height: 0 !important;
+}
+
+header[data-testid="stHeader"] {
+  display: none !important;
+}
+
+section.main {
+  padding-top: 0 !important;
+}
+
 .block-container {
-  padding-top: 1rem !important;
+  padding-top: 0.5rem !important;
   max-width: 1200px !important;
 }
 
@@ -67,11 +81,19 @@ div[data-testid="stMetricValue"] { color: #171a2c !important; font-weight: 600 !
 
 /* Stitch components */
 .groww-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 999;
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
-  background: #fff; border: 1px solid #E9E9EB; border-radius: 12px;
-  padding: 14px 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid #E9E9EB; border-radius: 12px;
+  padding: 16px 24px; margin: 0 0 24px 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  min-height: 56px;
 }
-.groww-topbar-title { font-size: 20px; font-weight: 600; color: #1D1D1F; }
+.groww-topbar-title { font-size: 20px; font-weight: 700; color: #1D1D1F; line-height: 1.3; }
 .groww-topbar-meta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 .groww-week { font-size: 12px; font-weight: 700; color: #006c4f; border-bottom: 2px solid #00D09C; padding-bottom: 4px; }
 .groww-pii { font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 999px; }

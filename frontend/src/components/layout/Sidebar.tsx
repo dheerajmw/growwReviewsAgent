@@ -11,7 +11,7 @@ const links = [
 
 export function Sidebar() {
   return (
-    <aside className="glass-nav fixed left-0 top-20 z-40 hidden h-[calc(100vh-80px)] w-sidebar-width flex-col border-r border-white/20 py-8 md:flex">
+    <aside className="glass-nav hidden w-sidebar-width shrink-0 flex-col overflow-y-auto border-r border-white/20 py-8 md:flex">
       <div className="mb-10 px-8">
         <div className="flex items-center gap-4">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-status-success text-xl font-black text-white shadow-logo-glow">
