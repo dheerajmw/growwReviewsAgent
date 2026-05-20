@@ -1,24 +1,15 @@
 """
-Groww Weekly Review Pulse — Streamlit dashboard (Pulse 6 design).
+Groww Weekly Review Pulse — Streamlit entry.
 
-Runs the native Stitch-styled Streamlit UI on Streamlit Cloud (recommended).
-Optional React embed: set PULSE_USE_REACT_UI=true and PULSE_UI_URL in secrets.
+Production (Streamlit Cloud): embeds the same React Pulse 6 app as localhost:5173.
+Set PULSE_STREAMLIT_NATIVE=true to use the legacy Python widgets instead.
 """
 
 from __future__ import annotations
 
 import streamlit as st
 
-from streamlit_lib import api
-from streamlit_lib import components as stitch
-from streamlit_lib.embed import render_react_dashboard, use_react_embed
-from streamlit_lib.ui import (
-    ensure_api_connected,
-    format_week,
-    init_page,
-    render_page_footer,
-    render_top_bar,
-)
+from streamlit_lib.embed import force_native_streamlit, render_react_dashboard, use_react_embed
 
 _embed_react = use_react_embed()
 
@@ -32,6 +23,23 @@ st.set_page_config(
 if _embed_react:
     render_react_dashboard()
     st.stop()
+
+# --- Legacy native Streamlit UI (opt-in) ---
+from streamlit_lib import api
+from streamlit_lib import components as stitch
+from streamlit_lib.ui import (
+    ensure_api_connected,
+    format_week,
+    init_page,
+    render_page_footer,
+    render_top_bar,
+)
+
+if not force_native_streamlit():
+    st.info(
+        "React dashboard unavailable. Deploy **groww-pulse-ui** on Render and set "
+        "`PULSE_UI_URL` in secrets, then reboot. Showing simplified Streamlit UI."
+    )
 
 init_page()
 
@@ -49,12 +57,6 @@ week = format_week(publish.get("week_ending"))
 pii_ok = pipeline.get("pii_passed", False)
 
 render_top_bar(week, pii_ok)
-
-st.link_button(
-    "Open full React dashboard ↗",
-    "https://groww-pulse-ui.onrender.com",
-    help="Optional hosted UI (same as npm run dev)",
-)
 
 hero_l, hero_r = st.columns([3, 1])
 with hero_l:

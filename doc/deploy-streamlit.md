@@ -2,86 +2,54 @@
 
 | Component | Host | Role |
 |-----------|------|------|
-| **BFF** (FastAPI) | [Render](https://render.com) `groww-pulse-api` | `/api/v1/*` data API |
-| **UI** (React Pulse 6) | Render `groww-pulse-ui` **or** local `npm run dev` | Full Stitch UI |
-| **Streamlit Cloud** | [share.streamlit.io](https://share.streamlit.io) | **Native** Pulse-styled dashboard (recommended) |
+| **BFF** (FastAPI) | Render `groww-pulse-api` | `/api/v1/*` data API |
+| **UI** (React Pulse 6) | Render `groww-pulse-ui` | Same as `npm run dev` → localhost:5173 |
+| **Streamlit Cloud** | share.streamlit.io | **Embeds** the React UI full-screen |
 
 ---
 
-## Streamlit Cloud (recommended setup)
+## Streamlit Cloud (match localhost)
 
-Streamlit runs the **Python Pulse 6 UI** (`streamlit_lib/ui.py` + `components.py`) — not an iframe. This avoids broken CSS / blue placeholder blocks.
+Streamlit loads the **same React app** as local `npm run dev` via iframe.
 
 **Settings → Secrets:**
 
 ```toml
 PULSE_API_URL = "https://groww-pulse-api.onrender.com"
-```
-
-Do **not** set `PULSE_UI_URL` unless you explicitly want the React iframe embed.
-
-**Reboot** the app after saving secrets.
-
-You should see: sidebar navigation, green top bar, metric cards, theme bars, and doc/draft cards.
-
-Optional: open the full React app via **Open full React dashboard ↗** or `https://groww-pulse-ui.onrender.com`.
-
----
-
-## Optional: embed React in Streamlit (advanced)
-
-Only if you need the exact Vite build inside Streamlit:
-
-```toml
-PULSE_API_URL = "https://groww-pulse-api.onrender.com"
-PULSE_USE_REACT_UI = true
 PULSE_UI_URL = "https://groww-pulse-ui.onrender.com"
 ```
 
-Requires `groww-pulse-ui` deployed and healthy. Redeploy UI after changing `vite` `base` to `/`.
+`PULSE_UI_URL` is optional on Streamlit Cloud (defaults to `groww-pulse-ui`). **Reboot** after changes.
+
+Prerequisites:
+
+1. Render blueprint applied — both `groww-pulse-api` and `groww-pulse-ui` **Live**
+2. `curl https://groww-pulse-api.onrender.com/api/v1/health` → `{"status":"ok"}`
+3. Open `https://groww-pulse-ui.onrender.com` — should show glass nav, sidebar, gradient background
+
+Legacy Python-only UI: set `PULSE_STREAMLIT_NATIVE = true` in secrets.
 
 ---
 
-## 1. Deploy on Render (blueprint)
+## Local development
 
-`render.yaml` creates:
-
-| Service | URL example |
-|---------|-------------|
-| `groww-pulse-api` | `https://groww-pulse-api.onrender.com` |
-| `groww-pulse-ui` | `https://groww-pulse-ui.onrender.com` |
-
-1. Render → **New Blueprint** → repo `growwReviewsAgent`, branch `main` → **Apply**
-2. Wait for both services **Live**
-3. Verify:
-   ```bash
-   curl https://groww-pulse-api.onrender.com/api/v1/health
-   curl -I https://groww-pulse-ui.onrender.com
-   ```
-
----
-
-## 2. Local development
-
-**React UI (recommended):**
+**Full stack (same as production UI):**
 
 ```bash
 ./scripts/serve_dashboard.sh
-# or: cd frontend && npm run dev  →  http://localhost:5173
+# React → http://localhost:5173
 ```
 
-**Streamlit (native Pulse UI):**
+**Streamlit embed (like Streamlit Cloud):**
+
+```bash
+./scripts/run_streamlit_with_react.sh
+```
+
+Or manually:
 
 ```bash
 export PULSE_API_URL=http://127.0.0.1:8080
-streamlit run streamlit_app.py
-```
-
-**Streamlit + React iframe (like optional production):**
-
-```bash
-export PULSE_API_URL=http://127.0.0.1:8080
-export PULSE_USE_REACT_UI=true
 export PULSE_UI_URL=http://localhost:5173
 cd frontend && npm run dev &
 streamlit run streamlit_app.py
@@ -89,10 +57,8 @@ streamlit run streamlit_app.py
 
 ---
 
-## 3. Build React for production manually
+## Render blueprint
 
-```bash
-./scripts/build_react_deploy.sh
-```
+See `render.yaml` for `groww-pulse-api` + `groww-pulse-ui`.
 
-`VITE_API_BASE_URL` must point at your Render BFF when building for `groww-pulse-ui`.
+React build sets `VITE_API_BASE_URL` to the BFF URL. API CORS allows `groww-pulse-ui.onrender.com`.

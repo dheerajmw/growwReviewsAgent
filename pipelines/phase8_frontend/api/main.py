@@ -16,13 +16,14 @@ _default_origins = [
     "http://127.0.0.1:5173",
     "http://localhost:8501",
     "http://127.0.0.1:8501",
+    "https://groww-pulse-ui.onrender.com",
 ]
 _extra = [o.strip() for o in os.environ.get("FRONTEND_ORIGIN", "").split(",") if o.strip()]
 origins = list(dict.fromkeys(_default_origins + _extra))
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_origin_regex=r"https://.*\.streamlit\.app",
+    allow_origin_regex=r"https://(.*\.streamlit\.app|.*\.onrender\.com)",
     allow_credentials=True,
     allow_methods=["GET"],
     allow_headers=["*"],

@@ -12,6 +12,8 @@ services:
         value: "3.11.9"
       - key: PULSE_DATA_ROOT
         value: /opt/render/project/src/deploy
+      - key: FRONTEND_ORIGIN
+        value: https://groww-pulse-ui.onrender.com
 
   - type: web
     name: groww-pulse-ui
