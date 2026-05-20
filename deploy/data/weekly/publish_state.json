@@ -1,0 +1,23 @@
+{
+  "doc_id": "1Z2_fdGmfUuvlB2p_U3wtVfxFg8V0Fi4TIYuPucZYGa8",
+  "doc_url": "https://docs.google.com/document/d/1Z2_fdGmfUuvlB2p_U3wtVfxFg8V0Fi4TIYuPucZYGa8/edit",
+  "published_at": "2026-05-19T19:23:18Z",
+  "week_ending": "2026-05-19",
+  "skipped": false,
+  "mcp_server": "https://mcp-server-p01x.onrender.com",
+  "mcp_response": {
+    "status": "success",
+    "message": "Content appended to document",
+    "document_id": "1Z2_fdGmfUuvlB2p_U3wtVfxFg8V0Fi4TIYuPucZYGa8"
+  },
+  "draft_to": "dhrj058@gmail.com",
+  "draft_id": "r2849146321512371194",
+  "draft_url": "https://mail.google.com/mail/u/0/#drafts",
+  "draft_created_at": "2026-05-19T19:36:12Z",
+  "draft_skipped": false,
+  "gmail_mcp_response": {
+    "status": "success",
+    "message": "Draft created",
+    "draft_id": "r2849146321512371194"
+  }
+}

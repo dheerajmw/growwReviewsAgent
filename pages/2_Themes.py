@@ -4,10 +4,13 @@ import pandas as pd
 import streamlit as st
 
 from streamlit_lib import api
-from streamlit_lib.ui import inject_styles, sidebar_header
+from streamlit_lib.ui import ensure_api_connected, inject_styles, sidebar_header
 
 inject_styles()
 sidebar_header()
+
+if not ensure_api_connected():
+    st.stop()
 
 st.title("Review themes")
 st.caption("Ranked themes from sampled App Store & Play reviews")

@@ -1,7 +1,7 @@
 """
 Groww Weekly Review Pulse — Streamlit dashboard.
 
-Calls the Phase 8 BFF on Render (or local). Set PULSE_API_URL in Streamlit secrets.
+Calls the Phase 8 BFF on Render (or local). Set PULSE_API_URL in .env or Streamlit secrets.
 """
 
 from __future__ import annotations
@@ -9,7 +9,14 @@ from __future__ import annotations
 import streamlit as st
 
 from streamlit_lib import api
-from streamlit_lib.ui import format_week, inject_styles, pii_badge, sidebar_header
+from streamlit_lib.ui import (
+    api_connection_sidebar,
+    ensure_api_connected,
+    format_week,
+    inject_styles,
+    pii_badge,
+    sidebar_header,
+)
 
 st.set_page_config(
     page_title="Groww — Weekly Review Pulse",
@@ -19,22 +26,16 @@ st.set_page_config(
 )
 
 inject_styles()
+api_connection_sidebar(expanded=not api.test_connection()[0])
 sidebar_header()
 
-# Optional API override (Settings page also sets this)
-with st.sidebar.expander("API connection", expanded=False):
-    default = api.api_base()
-    url = st.text_input("BFF base URL", value=default, help="Render service URL, no trailing slash")
-    if st.button("Apply & refresh"):
-        st.session_state["pulse_api_url"] = url.rstrip("/")
-        api.clear_cache()
-        st.rerun()
+if not ensure_api_connected():
+    st.stop()
 
 try:
     pipeline = api.pipeline_status()
 except Exception as e:
-    st.error(f"Cannot load dashboard: {e}")
-    st.info("Deploy the BFF on Render and set `PULSE_API_URL` in Streamlit secrets.")
+    st.error(str(e))
     st.stop()
 
 publish = pipeline.get("publish_state") or {}
@@ -92,4 +93,4 @@ with right:
         st.caption("Gmail draft not created yet.")
 
 st.divider()
-st.caption("Data from public App Store & Play exports · BFF on Render · UI on Streamlit")
+st.caption(f"Data via BFF at `{api.api_base()}`")

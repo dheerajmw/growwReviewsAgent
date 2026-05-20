@@ -1,5 +1,6 @@
-# Phase 8 BFF — read-only dashboard API (artifacts under data/ on disk)
+# Phase 8 BFF — read-only dashboard API (artifacts under deploy/data on disk)
 # Streamlit UI is hosted separately on Streamlit Cloud.
+# After push: Render Dashboard → New → Blueprint → growwReviewsAgent
 services:
   - type: web
     name: groww-pulse-api
@@ -11,9 +12,8 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: "3.11.9"
-      - key: FRONTEND_ORIGIN
-        description: Streamlit app URL(s), comma-separated
-        sync: false
       - key: PULSE_DATA_ROOT
-        description: Optional override for data/ directory
+        value: /opt/render/project/src/deploy
+      - key: FRONTEND_ORIGIN
+        description: Your Streamlit app URL (comma-separated if multiple)
         sync: false

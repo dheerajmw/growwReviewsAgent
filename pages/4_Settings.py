@@ -5,9 +5,10 @@ import os
 import streamlit as st
 
 from streamlit_lib import api
-from streamlit_lib.ui import inject_styles, sidebar_header
+from streamlit_lib.ui import api_connection_sidebar, inject_styles, sidebar_header
 
 inject_styles()
+api_connection_sidebar(expanded=True)
 sidebar_header()
 
 st.title("Settings")

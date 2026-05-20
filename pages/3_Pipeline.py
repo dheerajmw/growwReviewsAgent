@@ -3,10 +3,13 @@
 import streamlit as st
 
 from streamlit_lib import api
-from streamlit_lib.ui import inject_styles, sidebar_header
+from streamlit_lib.ui import ensure_api_connected, inject_styles, sidebar_header
 
 inject_styles()
 sidebar_header()
+
+if not ensure_api_connected():
+    st.stop()
 
 st.title("Pipeline status")
 st.caption("Phases 1–7 · automated refresh via GitHub Actions")

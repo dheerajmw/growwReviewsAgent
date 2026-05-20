@@ -2,35 +2,71 @@
 
 from __future__ import annotations
 
-import os
 from typing import Any
 
 import requests
 import streamlit as st
 
-DEFAULT_API = "http://127.0.0.1:8080"
+from .config import default_api_url, env_api_url, is_placeholder
+
+REQUEST_TIMEOUT = 15
 
 
 def api_base() -> str:
-    """Resolve API URL: secrets → env → sidebar session → default."""
+    """Resolve API URL: session override → secrets → .env → local default."""
+    if url := st.session_state.get("pulse_api_url"):
+        u = str(url).strip().rstrip("/")
+        if u and not is_placeholder(u):
+            return u
+
     try:
         if "PULSE_API_URL" in st.secrets:
-            return str(st.secrets["PULSE_API_URL"]).rstrip("/")
+            u = str(st.secrets["PULSE_API_URL"]).strip().rstrip("/")
+            if u and not is_placeholder(u):
+                return u
     except Exception:
         pass
-    if url := os.environ.get("PULSE_API_URL"):
-        return url.rstrip("/")
-    if url := st.session_state.get("pulse_api_url"):
-        return str(url).rstrip("/")
-    return DEFAULT_API
+
+    if url := env_api_url():
+        return url
+
+    if url := default_api_url():
+        return url
+
+    return ""
 
 
-def _get(path: str, timeout: int = 30) -> Any:
+def _get(path: str) -> Any:
     base = api_base()
+    if not base:
+        raise ConnectionError(
+            "PULSE_API_URL is not set. Add it to Streamlit secrets, .env, or the sidebar."
+        )
     url = f"{base}{path}"
-    r = requests.get(url, timeout=timeout)
-    r.raise_for_status()
-    return r.json()
+    try:
+        r = requests.get(url, timeout=REQUEST_TIMEOUT)
+        r.raise_for_status()
+        return r.json()
+    except requests.exceptions.ConnectionError as e:
+        raise ConnectionError(
+            f"Cannot reach BFF at {base}. "
+            "Start locally: `.venv/bin/python -m uvicorn pipelines.phase8_frontend.api.main:app --port 8080` "
+            "or set PULSE_API_URL to your Render URL."
+        ) from e
+
+
+def test_connection() -> tuple[bool, str]:
+    """Return (ok, message) for the configured base URL."""
+    base = api_base()
+    if not base:
+        return False, "No API URL configured."
+    try:
+        r = requests.get(f"{base}/api/v1/health", timeout=REQUEST_TIMEOUT)
+        if r.ok and r.json().get("status") == "ok":
+            return True, f"Connected to {base}"
+        return False, f"Unexpected response from {base}: {r.status_code}"
+    except requests.RequestException as e:
+        return False, f"Cannot reach {base}: {e}"
 
 
 @st.cache_data(ttl=60, show_spinner=False)

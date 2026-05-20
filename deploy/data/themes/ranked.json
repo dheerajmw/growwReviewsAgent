@@ -1,0 +1,53 @@
+{
+  "metadata": {
+    "generated_at": "2026-05-19T16:06:10Z",
+    "sample_count": 450,
+    "top3": [
+      "payments",
+      "onboarding",
+      "statements"
+    ]
+  },
+  "ranked": [
+    {
+      "id": "payments",
+      "label": "Payments",
+      "review_count": 180,
+      "low_rating_count": 102,
+      "score": 231.0,
+      "pct_of_sample": 40.0
+    },
+    {
+      "id": "onboarding",
+      "label": "Onboarding",
+      "review_count": 136,
+      "low_rating_count": 14,
+      "score": 143.0,
+      "pct_of_sample": 30.2
+    },
+    {
+      "id": "statements",
+      "label": "Statements",
+      "review_count": 112,
+      "low_rating_count": 25,
+      "score": 124.5,
+      "pct_of_sample": 24.9
+    },
+    {
+      "id": "withdrawals",
+      "label": "Withdrawals",
+      "review_count": 17,
+      "low_rating_count": 12,
+      "score": 23.0,
+      "pct_of_sample": 3.8
+    },
+    {
+      "id": "kyc",
+      "label": "KYC",
+      "review_count": 5,
+      "low_rating_count": 5,
+      "score": 7.5,
+      "pct_of_sample": 1.1
+    }
+  ]
+}
